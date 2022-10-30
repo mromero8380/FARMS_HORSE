@@ -119,7 +119,8 @@ CREATE TABLE RepairReport
 	ReportDetailID			smallint			NOT NULL,
 	RepairID				smallint			NOT NULL,
 	RepairStatus			char(1)				NOT NULL,
-	TimeCompleted			smalldatetime		NOT NULL
+	TimeCompleted			smalldatetime		NOT NULL,
+	RepairNotes				varchar(128)		NULL
 );
 
 --Creates the RepairQueue Table
@@ -224,3 +225,5 @@ ALTER TABLE Supply
 	PRIMARY KEY(SupplyID);
 
 GO
+
+--Altering the tables to add Foreign Keys
