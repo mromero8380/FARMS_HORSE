@@ -169,3 +169,58 @@ CREATE TABLE Supply
 );
 
 GO
+
+--Altering the tables to add Primary Keys
+ALTER TABLE Employee
+	ADD CONSTRAINT PK_Employee
+	PRIMARY KEY (EmployeeID);
+
+ALTER TABLE Position
+	ADD CONSTRAINT PK_Position
+	PRIMARY KEY (PositionID);
+
+ALTER TABLE Room
+	ADD CONSTRAINT PK_Room
+	PRIMARY KEY (RoomID);
+
+ALTER TABLE EmployeeShift
+	ADD CONSTRAINT PK_EmployeeShift
+	PRIMARY KEY (EmployeeShiftID);
+
+ALTER TABLE Repair
+	ADD CONSTRAINT PK_Repair
+	PRIMARY KEY (RepairID);
+
+ALTER TABLE HousekeepingQueue
+	ADD CONSTRAINT PK_HousekeepingQueue
+	PRIMARY KEY (HousekeepingQueueID);
+
+ALTER TABLE HousekeepingReport
+	ADD CONSTRAINT PK_HousekeepingReport
+	PRIMARY KEY (HousekeepingReportID)
+
+ALTER TABLE RepairReport
+	ADD CONSTRAINT PK_RepairReport
+	PRIMARY KEY (RepairReportID);
+
+ALTER TABLE RepairQueue
+	ADD CONSTRAINT PK_RepairQueue
+	PRIMARY KEY (RepairQueueID);
+
+ALTER TABLE Service
+	ADD CONSTRAINT PK_Service
+	PRIMARY KEY (ServiceID);
+
+ALTER TABLE ReportDetail
+	ADD CONSTRAINT PK_ReportDetail
+	PRIMARY KEY (ReportDetailID);
+
+ALTER TABLE SupplyDetail
+	ADD CONSTRAINT PK_SupplyDetail
+	PRIMARY KEY(SupplyDetailID);
+
+ALTER TABLE Supply
+	ADD CONSTRAINT PK_Supply
+	PRIMARY KEY(SupplyID);
+
+GO
