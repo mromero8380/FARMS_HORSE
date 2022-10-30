@@ -227,3 +227,97 @@ ALTER TABLE Supply
 GO
 
 --Altering the tables to add Foreign Keys
+ALTER TABLE Employee
+	ADD CONSTRAINT FK_Employee_PositionID
+	FOREIGN KEY (PositionID) REFERENCES Position (PositionID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE EmployeeShift
+	ADD CONSTRAINT FK_EmployeeShift_EmployeeID
+	FOREIGN KEY (EmployeeID) REFERENCES Employee (EmployeeID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE HousekeepingQueue
+	ADD CONSTRAINT FK_HousekeepingQueue_RoomID
+	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE HousekeepingReport
+	ADD 
+	
+	CONSTRAINT FK_HousekeepingReport_EmployeeShiftID
+	FOREIGN KEY (EmployeeShiftID) REFERENCES EmployeeShift (EmployeeShiftID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_HousekeepingReport_RoomID
+	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE RepairReport
+	ADD
+
+	CONSTRAINT FK_RepairReport_EmployeeShiftID
+	FOREIGN KEY (EmployeeShiftID) REFERENCES EmployeeShift (EmployeeShiftID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_RepairReport_ReportDetailID
+	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_RepairReport_RepairID
+	FOREIGN KEY (RepairID) REFERENCES Repair (RepairID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE RepairQueue
+	ADD
+
+	CONSTRAINT FK_RepairQueue_ReportDetailID
+	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_RepairQueue_RepairID
+	FOREIGN KEY (RepairID) REFERENCES Repair (RepairID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE ReportDetail
+	ADD
+
+	CONSTRAINT FK_ReportDetail_HousekeepingReportID
+	FOREIGN KEY (ReportID) REFERENCES Report (ReportID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_ReportDetail_ServiceID
+	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE SupplyDetail
+	ADD
+
+	CONSTRAINT FK_SupplyDetail_ReportDetailID
+	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_SupplyDetail_RepairReportID
+	FOREIGN KEY (RepairReportID) REFERENCES RepairReport (RepairReportID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_SupplyDetail_SupplyID
+	FOREIGN KEY (SupplyID) REFERENCES Supply (SupplyID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+GO
