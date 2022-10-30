@@ -80,7 +80,7 @@ CREATE TABLE EmployeeShift
 	EmployeeID				smallint			NOT NULL,
 	ShiftStart				smalldatetime		NOT NULL,
 	ShiftEnd				smalldatetime		NOT NULL,
-	ShitStatus				char(1)				NOT NULL
+	ShiftStatus				char(1)				NOT NULL
 );
 
 --Creates the Repair Table
@@ -275,5 +275,53 @@ ALTER TABLE HousekeepingDetail
 	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
+
+GO
+
+--Adding Constraints for the tables
+ALTER TABLE EmployeeShift
+	ADD
+	
+	CONSTRAINT CK_EmployeeShift_ShiftStatus
+	CHECK (ShiftStatus IN ('S', 'C')),
+
+	CONSTRAINT DK_EmployeeShift_ShiftStatus
+	DEFAULT 'S' FOR ShiftStatus;
+
+ALTER TABLE Room
+	ADD
+	
+	CONSTRAINT CK_Room_RoomStatus
+	CHECK (RoomStatus IN ('A', 'R')),
+
+	CONSTRAINT DK_Room_RoomStatus
+	DEFAULT 'A' FOR RoomStatus;
+
+ALTER TABLE HousekeepingReport
+	ADD
+	
+	CONSTRAINT CK_HousekeepingReport_ReportStatus
+	CHECK (ReportStatus IN ('P', 'C', 'X')),
+
+	CONSTRAINT DK_HousekeepingReport_ReportStatus
+	DEFAULT 'P' FOR ReportStatus;
+
+ALTER TABLE HousekeepingDetail
+	ADD
+	
+	CONSTRAINT CK_HousekeepingDetail_ServiceStatus
+	CHECK (ServiceStatus IN ('C', 'R', 'X')),
+
+	CONSTRAINT DK_HousekeepingDetail_ServiceStatus
+	DEFAULT 'C' FOR ServiceStatus;
+
+ALTER TABLE RepairReport
+	ADD
+	
+	CONSTRAINT CK_RepairReport_RepairStatus
+	CHECK (RepairStatus IN ('P', 'C', 'X')),
+
+	CONSTRAINT DK_RepairReport_RepairStatus
+	DEFAULT 'P' FOR RepairStatus;
 
 GO
