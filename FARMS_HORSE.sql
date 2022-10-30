@@ -37,3 +37,135 @@ FILEGROWTH = 12%
 );
 
 GO
+
+--Switching to FARMS_HORSE database to add the tables
+USE FARMS_HORSE;
+
+GO
+
+--Creates the Employee Table
+CREATE TABLE Employee
+(
+	EmployeeID				smallint			NOT NULL		IDENTITY(3000,1),
+	PositionID				smallint			NOT NULL,
+	EmployeeFirstName		varchar(32)			NOT NULL,
+	EmployeeLastName		varchar(32)			NOT NULL,
+	EmployeeAddress1		varchar(128)		NOT NULL,
+	EmployeeAddress2		varchar(32)			NULL,
+	EmployeeCity			varchar(32)			NOT NULL,
+	EmployeeState			char(2)				NOT NULL,
+	EmployeeZipCode			varchar(10)			NOT NULL
+);
+
+--Creates the Position Table
+CREATE TABLE Position
+(
+	PositionID				smallint			NOT NULL		IDENTITY(1,1),
+	PositionName			varchar(32)			NOT NULL,
+	PositionDescription		varchar(128)		NULL
+);
+
+--Creates the Room Table
+CREATE TABLE Room
+(
+	RoomID					smallint			NOT NULL		IDENTITY(1,1),
+	RoomStatus				char(1)				NOT NULL,
+	EstimatedCleanTime		smallint			NOT NULL
+);
+
+--Creates the EmployeeShift Table
+CREATE TABLE EmployeeShift
+(
+	EmployeeShiftID			smallint			NOT NULL		IDENTITY(1,1),
+	EmployeeID				smallint			NOT NULL,
+	ShiftStart				smalldatetime		NOT NULL,
+	ShiftEnd				smalldatetime		NOT NULL,
+	ShitStatus				char(1)				NOT NULL
+);
+
+--Creates the Repair Table
+CREATE TABLE Repair
+(
+	RepairID				smallint			NOT NULL		IDENTITY(1,1),
+	RepairType				smallint			NOT NULL,
+	RepairCost				smallint			NOT NULL,
+	RepairDescription		varchar(128)		NULL,
+	EstimatedRepairTime		smallint			NOT NULL
+);
+
+--Creates the HousekeepingQueue Table
+CREATE TABLE HousekeepingQueue
+(
+	HousekeepingQueueID		smallint			NOT NULL		IDENTITY(1,1),
+	RoomID					smallint			NOT NULL,
+	ServicePriority			tinyint				NOT NULL
+);
+
+--Creates the HousekeepingReport Table
+CREATE TABLE HousekeepingReport
+(
+	HousekeepingReportID	smallint			NOT NULL		IDENTITY(1,1),
+	EmployeeShiftID			smallint			NOT NULL,
+	RoomID					smallint			NOT NULL,
+	ReportStatus			char(1)				NOT NULL,
+	TimeCompleted			smalldatetime		NOT NULL
+);
+
+--Creates the RepairReport Table
+CREATE TABLE RepairReport
+(
+	RepairReportID			smallint			NOT NULL		IDENTITY(1,1),
+	EmployeeShiftID			smallint			NOT NULL,
+	ReportDetailID			smallint			NOT NULL,
+	RepairID				smallint			NOT NULL,
+	RepairStatus			char(1)				NOT NULL,
+	TimeCompleted			smalldatetime		NOT NULL
+);
+
+--Creates the RepairQueue Table
+CREATE TABLE RepairQueue
+(
+	RepairQueueID			smallint			NOT NULL		IDENTITY(1,1),
+	ReportDetailID			smallint			NOT NULL,
+	RepairID				smallint			NOT NULL,
+	RepairPriority			tinyint				NOT NULL
+);
+
+--Creates the Service Table
+CREATE TABLE Service
+(
+	ServiceID				smallint			NOT NULL		IDENTITY(1,1),
+	ServiceType				smallint			NOT NULL,
+	ServiceCost				smallint			NOT NULL,
+	ServiceDescription		varchar(128)		NULL
+);
+
+--Creates the ReportDetail Table
+CREATE TABLE ReportDetail
+(
+	ReportDetailID			smallint			NOT NULL		IDENTITY(1,1),
+	HousekeepingReportID	smallint			NOT NULL,
+	ServiceID				smallint			NOT NULL,
+	ServiceStatus			char(1)				NOT NULL,
+	ServiceNotes			varchar(128)		NULL
+);
+
+--Creates the SupplyDetail Table
+CREATE TABLE SupplyDetail
+(
+	SupplyDetailID			smallint			NOT NULL		IDENTITY(1,1),
+	ReportDetailID			smallint			NULL,
+	RepairDetailID			smallint			NULL,
+	SupplyID				smallint			NOT NULL,
+	QuantityUsed			tinyint				NOT NULL
+);
+
+--Creates the Supply
+CREATE TABLE Supply
+(
+	SupplyID				smallint			NOT NULL		IDENTITY(1,1),
+	SupplyName				varchar(32)			NOT NULL,
+	SupplyDescription		varchar(128)		NULL
+);
+
+GO
