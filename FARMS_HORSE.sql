@@ -116,7 +116,7 @@ CREATE TABLE RepairReport
 (
 	RepairReportID			smallint			NOT NULL		IDENTITY(1,1),
 	EmployeeShiftID			smallint			NOT NULL,
-	ReportDetailID			smallint			NOT NULL,
+	RoomID					smallint			NOT NULL,
 	RepairID				smallint			NOT NULL,
 	RepairStatus			char(1)				NOT NULL,
 	TimeCompleted			smalldatetime		NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE RepairReport
 CREATE TABLE RepairQueue
 (
 	RepairQueueID			smallint			NOT NULL		IDENTITY(1,1),
-	ReportDetailID			smallint			NOT NULL,
+	RoomID					smallint			NOT NULL,
 	RepairID				smallint			NOT NULL,
 	RepairPriority			tinyint				NOT NULL
 );
@@ -141,32 +141,14 @@ CREATE TABLE Service
 	ServiceDescription		varchar(128)		NULL
 );
 
---Creates the ReportDetail Table
-CREATE TABLE ReportDetail
+--Creates the HousekeepingDetail Table
+CREATE TABLE HousekeepingDetail
 (
-	ReportDetailID			smallint			NOT NULL		IDENTITY(1,1),
+	HousekeepingDetailID	smallint			NOT NULL		IDENTITY(1,1),
 	HousekeepingReportID	smallint			NOT NULL,
 	ServiceID				smallint			NOT NULL,
 	ServiceStatus			char(1)				NOT NULL,
 	ServiceNotes			varchar(128)		NULL
-);
-
---Creates the SupplyDetail Table
-CREATE TABLE SupplyDetail
-(
-	SupplyDetailID			smallint			NOT NULL		IDENTITY(1,1),
-	ReportDetailID			smallint			NULL,
-	RepairDetailID			smallint			NULL,
-	SupplyID				smallint			NOT NULL,
-	QuantityUsed			tinyint				NOT NULL
-);
-
---Creates the Supply
-CREATE TABLE Supply
-(
-	SupplyID				smallint			NOT NULL		IDENTITY(1,1),
-	SupplyName				varchar(32)			NOT NULL,
-	SupplyDescription		varchar(128)		NULL
 );
 
 GO
@@ -212,17 +194,9 @@ ALTER TABLE Service
 	ADD CONSTRAINT PK_Service
 	PRIMARY KEY (ServiceID);
 
-ALTER TABLE ReportDetail
-	ADD CONSTRAINT PK_ReportDetail
-	PRIMARY KEY (ReportDetailID);
-
-ALTER TABLE SupplyDetail
-	ADD CONSTRAINT PK_SupplyDetail
-	PRIMARY KEY(SupplyDetailID);
-
-ALTER TABLE Supply
-	ADD CONSTRAINT PK_Supply
-	PRIMARY KEY(SupplyID);
+ALTER TABLE HousekeepingDetail
+	ADD CONSTRAINT PK_HousekeepingDetail
+	PRIMARY KEY (HousekeepingDetailID);
 
 GO
 
@@ -266,8 +240,8 @@ ALTER TABLE RepairReport
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
-	CONSTRAINT FK_RepairReport_ReportDetailID
-	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
+	CONSTRAINT FK_RepairReport_RoomID
+	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
@@ -279,8 +253,8 @@ ALTER TABLE RepairReport
 ALTER TABLE RepairQueue
 	ADD
 
-	CONSTRAINT FK_RepairQueue_ReportDetailID
-	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
+	CONSTRAINT FK_RepairQueue_RoomID
+	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
@@ -289,34 +263,16 @@ ALTER TABLE RepairQueue
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE ReportDetail
+ALTER TABLE HousekeepingDetail
 	ADD
 
-	CONSTRAINT FK_ReportDetail_HousekeepingReportID
-	FOREIGN KEY (ReportID) REFERENCES Report (ReportID)
+	CONSTRAINT FK_HousekeepingDetail_HousekeepingReportID
+	FOREIGN KEY (HousekeepingReportID) REFERENCES HousekeepingReport (HousekeepingReportID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
-	CONSTRAINT FK_ReportDetail_ServiceID
+	CONSTRAINT FK_HousekeepingDetail_ServiceID
 	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE;
-
-ALTER TABLE SupplyDetail
-	ADD
-
-	CONSTRAINT FK_SupplyDetail_ReportDetailID
-	FOREIGN KEY (ReportDetailID) REFERENCES ReportDetail (ReportDetailID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_SupplyDetail_RepairReportID
-	FOREIGN KEY (RepairReportID) REFERENCES RepairReport (RepairReportID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_SupplyDetail_SupplyID
-	FOREIGN KEY (SupplyID) REFERENCES Supply (SupplyID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
