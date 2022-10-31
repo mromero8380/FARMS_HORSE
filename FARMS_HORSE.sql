@@ -65,12 +65,13 @@ CREATE TABLE Position
 	PositionDescription		varchar(128)		NULL
 );
 
---Creates the Room Table
-CREATE TABLE Room
+--Creates the Service Table
+CREATE TABLE Service
 (
-	RoomID					smallint			NOT NULL		IDENTITY(1,1),
-	RoomStatus				char(1)				NOT NULL,
-	EstimatedCleanTime		smallint			NOT NULL
+	ServiceID				smallint			NOT NULL		IDENTITY(1,1),
+	ServiceType				smallint			NOT NULL,
+	ServiceCost				smallint			NOT NULL,
+	ServiceDescription		varchar(128)		NULL
 );
 
 --Creates the EmployeeShift Table
@@ -93,12 +94,14 @@ CREATE TABLE Repair
 	EstimatedRepairTime		smallint			NOT NULL
 );
 
---Creates the HousekeepingQueue Table
-CREATE TABLE HousekeepingQueue
+--Creates the HousekeepingDetail Table
+CREATE TABLE HousekeepingDetail
 (
-	HousekeepingQueueID		smallint			NOT NULL		IDENTITY(1,1),
-	RoomID					smallint			NOT NULL,
-	ServicePriority			tinyint				NOT NULL
+	HousekeepingDetailID	smallint			NOT NULL		IDENTITY(1,1),
+	HousekeepingReportID	smallint			NOT NULL,
+	ServiceID				smallint			NOT NULL,
+	ServiceStatus			char(1)				NOT NULL,
+	ServiceNotes			varchar(128)		NULL
 );
 
 --Creates the HousekeepingReport Table
@@ -123,6 +126,22 @@ CREATE TABLE RepairReport
 	RepairNotes				varchar(128)		NULL
 );
 
+--Creates the HousekeepingQueue Table
+CREATE TABLE HousekeepingQueue
+(
+	HousekeepingQueueID		smallint			NOT NULL		IDENTITY(1,1),
+	RoomID					smallint			NOT NULL,
+	ServicePriority			tinyint				NOT NULL
+);
+
+--Creates the Room Table
+CREATE TABLE Room
+(
+	RoomID					smallint			NOT NULL		IDENTITY(1,1),
+	RoomStatus				char(1)				NOT NULL,
+	EstimatedCleanTime		smallint			NOT NULL
+);
+
 --Creates the RepairQueue Table
 CREATE TABLE RepairQueue
 (
@@ -130,25 +149,6 @@ CREATE TABLE RepairQueue
 	RoomID					smallint			NOT NULL,
 	RepairID				smallint			NOT NULL,
 	RepairPriority			tinyint				NOT NULL
-);
-
---Creates the Service Table
-CREATE TABLE Service
-(
-	ServiceID				smallint			NOT NULL		IDENTITY(1,1),
-	ServiceType				smallint			NOT NULL,
-	ServiceCost				smallint			NOT NULL,
-	ServiceDescription		varchar(128)		NULL
-);
-
---Creates the HousekeepingDetail Table
-CREATE TABLE HousekeepingDetail
-(
-	HousekeepingDetailID	smallint			NOT NULL		IDENTITY(1,1),
-	HousekeepingReportID	smallint			NOT NULL,
-	ServiceID				smallint			NOT NULL,
-	ServiceStatus			char(1)				NOT NULL,
-	ServiceNotes			varchar(128)		NULL
 );
 
 GO
@@ -162,9 +162,9 @@ ALTER TABLE Position
 	ADD CONSTRAINT PK_Position
 	PRIMARY KEY (PositionID);
 
-ALTER TABLE Room
-	ADD CONSTRAINT PK_Room
-	PRIMARY KEY (RoomID);
+ALTER TABLE Service
+	ADD CONSTRAINT PK_Service
+	PRIMARY KEY (ServiceID);
 
 ALTER TABLE EmployeeShift
 	ADD CONSTRAINT PK_EmployeeShift
@@ -174,9 +174,9 @@ ALTER TABLE Repair
 	ADD CONSTRAINT PK_Repair
 	PRIMARY KEY (RepairID);
 
-ALTER TABLE HousekeepingQueue
-	ADD CONSTRAINT PK_HousekeepingQueue
-	PRIMARY KEY (HousekeepingQueueID);
+ALTER TABLE HousekeepingDetail
+	ADD CONSTRAINT PK_HousekeepingDetail
+	PRIMARY KEY (HousekeepingDetailID);
 
 ALTER TABLE HousekeepingReport
 	ADD CONSTRAINT PK_HousekeepingReport
@@ -186,17 +186,17 @@ ALTER TABLE RepairReport
 	ADD CONSTRAINT PK_RepairReport
 	PRIMARY KEY (RepairReportID);
 
+ALTER TABLE HousekeepingQueue
+	ADD CONSTRAINT PK_HousekeepingQueue
+	PRIMARY KEY (HousekeepingQueueID);
+
+ALTER TABLE Room
+	ADD CONSTRAINT PK_Room
+	PRIMARY KEY (RoomID);
+
 ALTER TABLE RepairQueue
 	ADD CONSTRAINT PK_RepairQueue
 	PRIMARY KEY (RepairQueueID);
-
-ALTER TABLE Service
-	ADD CONSTRAINT PK_Service
-	PRIMARY KEY (ServiceID);
-
-ALTER TABLE HousekeepingDetail
-	ADD CONSTRAINT PK_HousekeepingDetail
-	PRIMARY KEY (HousekeepingDetailID);
 
 GO
 
@@ -213,9 +213,16 @@ ALTER TABLE EmployeeShift
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE HousekeepingQueue
-	ADD CONSTRAINT FK_HousekeepingQueue_RoomID
-	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+ALTER TABLE HousekeepingDetail
+	ADD
+
+	CONSTRAINT FK_HousekeepingDetail_HousekeepingReportID
+	FOREIGN KEY (HousekeepingReportID) REFERENCES HousekeepingReport (HousekeepingReportID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_HousekeepingDetail_ServiceID
+	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
@@ -250,6 +257,12 @@ ALTER TABLE RepairReport
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
+ALTER TABLE HousekeepingQueue
+	ADD CONSTRAINT FK_HousekeepingQueue_RoomID
+	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
 ALTER TABLE RepairQueue
 	ADD
 
@@ -260,19 +273,6 @@ ALTER TABLE RepairQueue
 
 	CONSTRAINT FK_RepairQueue_RepairID
 	FOREIGN KEY (RepairID) REFERENCES Repair (RepairID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE;
-
-ALTER TABLE HousekeepingDetail
-	ADD
-
-	CONSTRAINT FK_HousekeepingDetail_HousekeepingReportID
-	FOREIGN KEY (HousekeepingReportID) REFERENCES HousekeepingReport (HousekeepingReportID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_HousekeepingDetail_ServiceID
-	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
@@ -288,14 +288,14 @@ ALTER TABLE EmployeeShift
 	CONSTRAINT DK_EmployeeShift_ShiftStatus
 	DEFAULT 'S' FOR ShiftStatus;
 
-ALTER TABLE Room
+ALTER TABLE HousekeepingDetail
 	ADD
 	
-	CONSTRAINT CK_Room_RoomStatus
-	CHECK (RoomStatus IN ('A', 'R')),
+	CONSTRAINT CK_HousekeepingDetail_ServiceStatus
+	CHECK (ServiceStatus IN ('C', 'R', 'X')),
 
-	CONSTRAINT DK_Room_RoomStatus
-	DEFAULT 'A' FOR RoomStatus;
+	CONSTRAINT DK_HousekeepingDetail_ServiceStatus
+	DEFAULT 'C' FOR ServiceStatus;
 
 ALTER TABLE HousekeepingReport
 	ADD
@@ -306,15 +306,6 @@ ALTER TABLE HousekeepingReport
 	CONSTRAINT DK_HousekeepingReport_ReportStatus
 	DEFAULT 'P' FOR ReportStatus;
 
-ALTER TABLE HousekeepingDetail
-	ADD
-	
-	CONSTRAINT CK_HousekeepingDetail_ServiceStatus
-	CHECK (ServiceStatus IN ('C', 'R', 'X')),
-
-	CONSTRAINT DK_HousekeepingDetail_ServiceStatus
-	DEFAULT 'C' FOR ServiceStatus;
-
 ALTER TABLE RepairReport
 	ADD
 	
@@ -323,5 +314,14 @@ ALTER TABLE RepairReport
 
 	CONSTRAINT DK_RepairReport_RepairStatus
 	DEFAULT 'P' FOR RepairStatus;
+
+ALTER TABLE Room
+	ADD
+	
+	CONSTRAINT CK_Room_RoomStatus
+	CHECK (RoomStatus IN ('A', 'R')),
+
+	CONSTRAINT DK_Room_RoomStatus
+	DEFAULT 'A' FOR RoomStatus;
 
 GO
