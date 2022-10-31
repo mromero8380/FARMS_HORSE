@@ -347,3 +347,8 @@ ALTER TABLE Room
 	DEFAULT 'A' FOR RoomStatus;
 
 GO
+
+--Drops the database so it does not live on a local machine
+USE master;
+
+DROP DATABASE FARMS_HORSE;
