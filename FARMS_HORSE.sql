@@ -137,9 +137,21 @@ CREATE TABLE HousekeepingQueue
 --Creates the Room Table
 CREATE TABLE Room
 (
-	RoomID					smallint			NOT NULL		IDENTITY(1,1),
+	RoomID					smallint			NOT NULL,
 	RoomStatus				char(1)				NOT NULL,
 	EstimatedCleanTime		smallint			NOT NULL
+);
+
+--Creates the FARMS_Room Table
+CREATE TABLE FARMS_Room
+(
+	RoomID					smallint			NOT NULL		IDENTITY(1,1),
+	RoomNumber				varchar(5)			NOT NULL,
+	RoomDescription			varchar(200)		NOT NULL,
+	RoomSmoking				bit					NOT NULL,
+	RoomBedConfiguration	char(2)				NOT NULL,
+	HotelID					smallint			NOT NULL,
+	RoomTypeID				smallint			NOT NULL
 );
 
 --Creates the RepairQueue Table
@@ -192,6 +204,10 @@ ALTER TABLE HousekeepingQueue
 
 ALTER TABLE Room
 	ADD CONSTRAINT PK_Room
+	PRIMARY KEY (RoomID);
+
+ALTER TABLE FARMS_Room
+	ADD CONSTRAINT PK_FARMS_Room
 	PRIMARY KEY (RoomID);
 
 ALTER TABLE RepairQueue
@@ -260,6 +276,12 @@ ALTER TABLE RepairReport
 ALTER TABLE HousekeepingQueue
 	ADD CONSTRAINT FK_HousekeepingQueue_RoomID
 	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE Room
+	ADD CONSTRAINT FK_Room_FARMSRoomID
+	FOREIGN KEY (RoomID) REFERENCES FARMS_Room (RoomID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
