@@ -48,6 +48,7 @@ CREATE TABLE Employee
 (
 	EmployeeID				smallint			NOT NULL		IDENTITY(3000,1),
 	PositionID				smallint			NOT NULL,
+	HotelID					smallint			NOT NULL,
 	EmployeeFirstName		varchar(32)			NOT NULL,
 	EmployeeLastName		varchar(32)			NOT NULL,
 	EmployeeAddress1		varchar(128)		NOT NULL,
@@ -65,84 +66,88 @@ CREATE TABLE Position
 	PositionDescription		varchar(128)		NULL
 );
 
---Creates the Service Table
-CREATE TABLE Service
+--Creates the EmployeeShift Table
+CREATE TABLE EmployeeWeeklyShift
 (
-	ServiceID				smallint			NOT NULL		IDENTITY(1,1),
-	ServiceType				smallint			NOT NULL,
-	ServiceCost				smallint			NOT NULL,
-	ServiceDescription		varchar(128)		NULL
+	EmployeeWeeklyShiftID			smallint			NOT NULL		IDENTITY(1,1),
+	EmployeeID				smallint			NOT NULL,
+	DayOfWeek				tinyint				NOT NULL,
+	ShiftStart				time				NOT NULL,
+	ShiftEnd				time				NOT NULL,
+	ShiftStatus				char(1)				NOT NULL
 );
 
---Creates the EmployeeShift Table
-CREATE TABLE EmployeeShift
+--Creates the HousekeepingReport Table
+CREATE TABLE Housekeeping
 (
-	EmployeeShiftID			smallint			NOT NULL		IDENTITY(1,1),
+	HousekeepingID			smallint			NOT NULL		IDENTITY(1,1),
 	EmployeeID				smallint			NOT NULL,
-	ShiftStart				smalldatetime		NOT NULL,
-	ShiftEnd				smalldatetime		NOT NULL,
-	ShiftStatus				char(1)				NOT NULL
+	HousekeepingRoomID		smallint			NOT NULL,
+	FolioID					smallint			NOT NULL,
+	ReportStatus			char(1)				NOT NULL,
+	TimeCompleted			smalldatetime		NULL
+);
+
+--Creates the Room Table
+CREATE TABLE HousekeepingRoom
+(
+	HousekeepingRoomID		smallint			NOT NULL,
+	RoomID					smallint			NOT NULL,
+	HousekeepingRoomTypeID	smallint			NOT NULL,
+	RoomStatus				char(1)				NOT NULL
 );
 
 --Creates the Repair Table
 CREATE TABLE Repair
 (
 	RepairID				smallint			NOT NULL		IDENTITY(1,1),
-	RepairType				smallint			NOT NULL,
-	RepairCost				smallint			NOT NULL,
+	EmployeeID				smallint			NOT NULL,
+	HousekeepingRoomID		smallint			NOT NULL,
+	FolioID					smallint			NOT NULL,
+	RepairTypeID			smallint			NOT NULL,
+	RepairStatus			char(1)				NOT NULL,
+	TimeCompleted			smalldatetime		NULL,
+	RepairNotes				varchar(128)		NULL
+);
+
+--Creates the HousekeepingRoomType Table
+CREATE TABLE HousekeepingRoomType
+(
+	HousekeepingRoomTypeID	smallint			NOT NULL		IDENTITY(1,1),
+	RoomTypeID				smallint			NOT NULL,
+	EstimatedCleanTime		tinyint				NOT NULL
+);
+
+--Creates the HousekeepingService Table
+CREATE TABLE HousekeepingService
+(
+	HousekeepingServiceID	smallint			NOT NULL		IDENTITY(1,1),
+	HousekeepingID			smallint			NOT NULL,
+	ServiceTypeID			smallint			NOT NULL,
+	ServiceStatus			char(1)				NOT NULL,
+	ServiceNotes			varchar(128)		NULL
+)
+
+--Creates the ServiceType Table
+CREATE TABLE ServiceType
+(
+	ServiceTypeID			smallint			NOT NULL		IDENTITY(1,1),
+	ServiceName				varchar(32)			NOT NULL,
+	ServiceCost				smallmoney			NOT NULL,
+	ServiceDescription		varchar(128)		NULL
+);
+
+--Creates the RepairType Table
+CREATE TABLE RepairType
+(
+	RepairTypeID			smallint			NOT NULL		IDENTITY(1,1),
+	RepairName				varchar(32)			NOT NULL,
+	RepairCost				smallmoney			NOT NULL,
 	RepairDescription		varchar(128)		NULL,
 	EstimatedRepairTime		smallint			NOT NULL
 );
 
---Creates the HousekeepingDetail Table
-CREATE TABLE HousekeepingDetail
-(
-	HousekeepingDetailID	smallint			NOT NULL		IDENTITY(1,1),
-	HousekeepingReportID	smallint			NOT NULL,
-	ServiceID				smallint			NOT NULL,
-	ServiceStatus			char(1)				NOT NULL,
-	ServiceNotes			varchar(128)		NULL
-);
-
---Creates the HousekeepingReport Table
-CREATE TABLE HousekeepingReport
-(
-	HousekeepingReportID	smallint			NOT NULL		IDENTITY(1,1),
-	EmployeeShiftID			smallint			NOT NULL,
-	RoomID					smallint			NOT NULL,
-	ReportStatus			char(1)				NOT NULL,
-	TimeCompleted			smalldatetime		NOT NULL
-);
-
---Creates the RepairReport Table
-CREATE TABLE RepairReport
-(
-	RepairReportID			smallint			NOT NULL		IDENTITY(1,1),
-	EmployeeShiftID			smallint			NOT NULL,
-	RoomID					smallint			NOT NULL,
-	RepairID				smallint			NOT NULL,
-	RepairStatus			char(1)				NOT NULL,
-	TimeCompleted			smalldatetime		NOT NULL,
-	RepairNotes				varchar(128)		NULL
-);
-
---Creates the HousekeepingQueue Table
-CREATE TABLE HousekeepingQueue
-(
-	HousekeepingQueueID		smallint			NOT NULL		IDENTITY(1,1),
-	RoomID					smallint			NOT NULL,
-	ServicePriority			tinyint				NOT NULL
-);
-
---Creates the Room Table
-CREATE TABLE Room
-(
-	RoomID					smallint			NOT NULL,
-	RoomStatus				char(1)				NOT NULL,
-	EstimatedCleanTime		smallint			NOT NULL
-);
-
---Creates the FARMS_Room Table
+--Create the FARMS Tables
 CREATE TABLE FARMS_Room
 (
 	RoomID					smallint			NOT NULL		IDENTITY(1,1),
@@ -154,13 +159,38 @@ CREATE TABLE FARMS_Room
 	RoomTypeID				smallint			NOT NULL
 );
 
---Creates the RepairQueue Table
-CREATE TABLE RepairQueue
+CREATE TABLE FARMS_Hotel
 (
-	RepairQueueID			smallint			NOT NULL		IDENTITY(1,1),
+	HotelID					smallint			NOT NULL,
+	HotelName				varchar(30)			NOT NULL,
+	HotelAddress			varchar(30)			NOT NULL,
+	HotelCity				varchar(20)			NOT NULL,
+	HotelState				char(2)				NULL,
+	HotelCountry			varchar(20)			NOT NULL,
+	HotelPostalCode			char(10)			NOT NULL,
+	HotelStarRating			char(1)				NULL,
+	HotelPictureLink		varchar(100)		NULL,
+	TaxLocationID			smallint			NOT NULL
+);
+
+CREATE TABLE FARMS_Folio
+(
+	FolioID					smallint			NOT NULL		IDENTITY(1,1),
+	ReservationID			smallint			NOT NULL,
+	GuestID					smallint			NOT NULL,
 	RoomID					smallint			NOT NULL,
-	RepairID				smallint			NOT NULL,
-	RepairPriority			tinyint				NOT NULL
+	QuotedRate				smallmoney			NOT NULL,
+	CheckinDate				smalldatetime		NOT NULL,
+	Nights					tinyint				NOT NULL,
+	Status					char(1)				NOT NULL,
+	Comments				varchar(200)		NULL,
+	DiscountID				smallint			NOT NULL
+);
+
+CREATE TABLE FARMS_RoomType
+(
+	RoomTypeID				smallint			NOT NULL		IDENTITY(1,1),
+	RTDescription			varchar(200)		NOT NULL
 );
 
 GO
@@ -174,176 +204,198 @@ ALTER TABLE Position
 	ADD CONSTRAINT PK_Position
 	PRIMARY KEY (PositionID);
 
-ALTER TABLE Service
-	ADD CONSTRAINT PK_Service
-	PRIMARY KEY (ServiceID);
+ALTER TABLE EmployeeWeeklyShift
+	ADD CONSTRAINT PK_EmployeeWeeklyShift
+	PRIMARY KEY (EmployeeWeeklyShiftID)
 
-ALTER TABLE EmployeeShift
-	ADD CONSTRAINT PK_EmployeeShift
-	PRIMARY KEY (EmployeeShiftID);
+ALTER TABLE Housekeeping
+	ADD CONSTRAINT PK_Housekeeping
+	PRIMARY KEY (HousekeepingID)
+
+ALTER TABLE HousekeepingRoom
+	ADD CONSTRAINT PK_HousekeepingRoom
+	PRIMARY KEY (HousekeepingRoomID)
 
 ALTER TABLE Repair
 	ADD CONSTRAINT PK_Repair
-	PRIMARY KEY (RepairID);
+	PRIMARY KEY (RepairID)
 
-ALTER TABLE HousekeepingDetail
-	ADD CONSTRAINT PK_HousekeepingDetail
-	PRIMARY KEY (HousekeepingDetailID);
+ALTER TABLE HousekeepingRoomType
+	ADD CONSTRAINT PK_HousekeepingRoomType
+	PRIMARY KEY (HousekeepingRoomTypeID)
 
-ALTER TABLE HousekeepingReport
-	ADD CONSTRAINT PK_HousekeepingReport
-	PRIMARY KEY (HousekeepingReportID)
+ALTER TABLE HousekeepingService
+	ADD CONSTRAINT PK_HousekeepingService
+	PRIMARY KEY (HousekeepingServiceID)
 
-ALTER TABLE RepairReport
-	ADD CONSTRAINT PK_RepairReport
-	PRIMARY KEY (RepairReportID);
+ALTER TABLE ServiceType
+	ADD CONSTRAINT PK_ServiceType
+	PRIMARY KEY (ServiceTypeID)
 
-ALTER TABLE HousekeepingQueue
-	ADD CONSTRAINT PK_HousekeepingQueue
-	PRIMARY KEY (HousekeepingQueueID);
+ALTER TABLE RepairType
+	ADD CONSTRAINT PK_RepairType
+	PRIMARY KEY (RepairTypeID)
 
-ALTER TABLE Room
-	ADD CONSTRAINT PK_Room
-	PRIMARY KEY (RoomID);
-
+--FARMS Priamry Keys
 ALTER TABLE FARMS_Room
-	ADD CONSTRAINT PK_FARMS_Room
-	PRIMARY KEY (RoomID);
+	ADD CONSTRAINT PK_Room
+	PRIMARY KEY (RoomID)
 
-ALTER TABLE RepairQueue
-	ADD CONSTRAINT PK_RepairQueue
-	PRIMARY KEY (RepairQueueID);
+ALTER TABLE FARMS_Hotel
+	ADD CONSTRAINT PK_Hotel
+	PRIMARY KEY (HotelID)
+
+ALTER TABLE FARMS_Folio
+	ADD CONSTRAINT PK_Folio
+	PRIMARY KEY (FolioID)
+
+ALTER TABLE FARMS_RoomType
+	ADD CONSTRAINT PK_RoomType
+	PRIMARY KEY (RoomTypeID)
 
 GO
 
 --Altering the tables to add Foreign Keys
 ALTER TABLE Employee
-	ADD CONSTRAINT FK_Employee_PositionID
+	ADD 
+	
+	CONSTRAINT FK_Employee_PositionID
 	FOREIGN KEY (PositionID) REFERENCES Position (PositionID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_Employee_HotelID
+	FOREIGN KEY (HotelID) REFERENCES FARMS_Hotel (HotelID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE EmployeeShift
-	ADD CONSTRAINT FK_EmployeeShift_EmployeeID
+ALTER TABLE EmployeeWeeklyShift
+	ADD CONSTRAINT FK_EmployeeWeeklyShift_EmployeeID
 	FOREIGN KEY (EmployeeID) REFERENCES Employee (EmployeeID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE HousekeepingDetail
-	ADD
-
-	CONSTRAINT FK_HousekeepingDetail_HousekeepingReportID
-	FOREIGN KEY (HousekeepingReportID) REFERENCES HousekeepingReport (HousekeepingReportID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_HousekeepingDetail_ServiceID
-	FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE;
-
-ALTER TABLE HousekeepingReport
+ALTER TABLE Housekeeping
 	ADD 
 	
-	CONSTRAINT FK_HousekeepingReport_EmployeeShiftID
-	FOREIGN KEY (EmployeeShiftID) REFERENCES EmployeeShift (EmployeeShiftID)
+	CONSTRAINT FK_Housekeeping_EmployeeID
+	FOREIGN KEY (EmployeeID) REFERENCES Employee (EmployeeID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
-	CONSTRAINT FK_HousekeepingReport_RoomID
-	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	CONSTRAINT FK_Housekeeping_HousekeepingRoomID
+	FOREIGN KEY (HousekeepingRoomID) REFERENCES HousekeepingRoom (HousekeepingRoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_Housekeeping_FolioID
+	FOREIGN KEY (FolioID) REFERENCES FARMS_Folio (FolioID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE RepairReport
+ALTER TABLE HousekeepingRoom
 	ADD
 
-	CONSTRAINT FK_RepairReport_EmployeeShiftID
-	FOREIGN KEY (EmployeeShiftID) REFERENCES EmployeeShift (EmployeeShiftID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_RepairReport_RoomID
-	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE,
-
-	CONSTRAINT FK_RepairReport_RepairID
-	FOREIGN KEY (RepairID) REFERENCES Repair (RepairID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE;
-
-ALTER TABLE HousekeepingQueue
-	ADD CONSTRAINT FK_HousekeepingQueue_RoomID
-	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE;
-
-ALTER TABLE Room
-	ADD CONSTRAINT FK_Room_FARMSRoomID
+	CONSTRAINT FK_HousekeepingRoom_RoomID
 	FOREIGN KEY (RoomID) REFERENCES FARMS_Room (RoomID)
 	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_HousekeepingRoom_HousekeepingRoomTypeID
+	FOREIGN KEY (HousekeepingRoomTypeID) REFERENCES HousekeepingRoomType (HousekeepingRoomTypeID)
+	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
-ALTER TABLE RepairQueue
+ALTER TABLE Repair
 	ADD
 
-	CONSTRAINT FK_RepairQueue_RoomID
-	FOREIGN KEY (RoomID) REFERENCES Room (RoomID)
+	CONSTRAINT FK_Repair_EmployeeID
+	FOREIGN KEY (EmployeeID) REFERENCES Employee (EmployeeID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE,
 
-	CONSTRAINT FK_RepairQueue_RepairID
-	FOREIGN KEY (RepairID) REFERENCES Repair (RepairID)
+	CONSTRAINT FK_Repair_HousekeepingRoomID
+	FOREIGN KEY (HousekeepingRoomID) REFERENCES HousekeepingRoom (HousekeepingRoomID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_Repair_FolioID
+	FOREIGN KEY (FolioID) REFERENCES FARMS_Folio (FolioID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_Repair_RepairTypeID
+	FOREIGN KEY (RepairTypeID) REFERENCES RepairType (RepairTypeID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE HousekeepingRoomType
+	ADD
+
+	CONSTRAINT FK_HousekeepingRoomType_RoomTypeID
+	FOREIGN KEY (RoomTypeID) REFERENCES FARMS_RoomType (RoomTypeID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
+
+ALTER TABLE HousekeepingService
+	ADD 
+	
+	CONSTRAINT FK_HousekeepingService_HousekeepingID
+	FOREIGN KEY (HousekeepingID) REFERENCES Housekeeping (HousekeepingID)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
+
+	CONSTRAINT FK_HousekeepingService_ServiceTypeID
+	FOREIGN KEY (ServiceTypeID) REFERENCES ServiceType (ServiceTypeID)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 
 GO
 
 --Adding Constraints for the tables
-ALTER TABLE EmployeeShift
+ALTER TABLE EmployeeWeeklyShift
 	ADD
 	
-	CONSTRAINT CK_EmployeeShift_ShiftStatus
+	CONSTRAINT CK_EmployeeWeeklyShift_ShiftStatus
 	CHECK (ShiftStatus IN ('S', 'C')),
 
-	CONSTRAINT DK_EmployeeShift_ShiftStatus
+	CONSTRAINT DK_EmployeeWeeklyShift_ShiftStatus
 	DEFAULT 'S' FOR ShiftStatus;
 
-ALTER TABLE HousekeepingDetail
+ALTER TABLE HousekeepingService
 	ADD
 	
-	CONSTRAINT CK_HousekeepingDetail_ServiceStatus
+	CONSTRAINT CK_HousekeepingService_ServiceStatus
 	CHECK (ServiceStatus IN ('C', 'R', 'X')),
 
-	CONSTRAINT DK_HousekeepingDetail_ServiceStatus
+	CONSTRAINT DK_HousekeepingService_ServiceStatus
 	DEFAULT 'C' FOR ServiceStatus;
 
-ALTER TABLE HousekeepingReport
+ALTER TABLE Housekeeping
 	ADD
 	
-	CONSTRAINT CK_HousekeepingReport_ReportStatus
+	CONSTRAINT CK_Housekeeping_ReportStatus
 	CHECK (ReportStatus IN ('P', 'C', 'X')),
 
-	CONSTRAINT DK_HousekeepingReport_ReportStatus
+	CONSTRAINT DK_Housekeeping_ReportStatus
 	DEFAULT 'P' FOR ReportStatus;
 
-ALTER TABLE RepairReport
+ALTER TABLE Repair
 	ADD
 	
-	CONSTRAINT CK_RepairReport_RepairStatus
+	CONSTRAINT CK_Repair_RepairStatus
 	CHECK (RepairStatus IN ('P', 'C', 'X')),
 
-	CONSTRAINT DK_RepairReport_RepairStatus
+	CONSTRAINT DK_Repair_RepairStatus
 	DEFAULT 'P' FOR RepairStatus;
 
-ALTER TABLE Room
+ALTER TABLE HousekeepingRoom
 	ADD
 	
-	CONSTRAINT CK_Room_RoomStatus
+	CONSTRAINT CK_HousekeepingRoom_RoomStatus
 	CHECK (RoomStatus IN ('A', 'R')),
 
-	CONSTRAINT DK_Room_RoomStatus
+	CONSTRAINT DK_HousekeepingRoom_RoomStatus
 	DEFAULT 'A' FOR RoomStatus;
 
 GO
