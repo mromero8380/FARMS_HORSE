@@ -362,6 +362,24 @@ ALTER TABLE EmployeeWeeklyShift
 	CONSTRAINT DK_EmployeeWeeklyShift_ShiftStatus
 	DEFAULT 'S' FOR ShiftStatus;
 
+ALTER TABLE HousekeepingRoom
+	ADD
+	
+	CONSTRAINT CK_HousekeepingRoom_RoomStatus
+	CHECK (RoomStatus IN ('A', 'R')),
+
+	CONSTRAINT DK_HousekeepingRoom_RoomStatus
+	DEFAULT 'A' FOR RoomStatus;
+
+ALTER TABLE Housekeeping
+	ADD
+	
+	CONSTRAINT CK_Housekeeping_HousekeepingStatus
+	CHECK (HousekeepingStatus IN ('P', 'C', 'R', 'X')),
+
+	CONSTRAINT DK_Housekeeping_HousekeepingStatus
+	DEFAULT 'P' FOR HousekeepingStatus;
+
 ALTER TABLE HousekeepingService
 	ADD
 	
@@ -370,15 +388,6 @@ ALTER TABLE HousekeepingService
 
 	CONSTRAINT DK_HousekeepingService_ServiceStatus
 	DEFAULT 'C' FOR ServiceStatus;
-
-ALTER TABLE Housekeeping
-	ADD
-	
-	CONSTRAINT CK_Housekeeping_HousekeepingStatus
-	CHECK (HousekeepingStatus IN ('P', 'C', 'X')),
-
-	CONSTRAINT DK_Housekeeping_HousekeepingStatus
-	DEFAULT 'P' FOR HousekeepingStatus;
 
 ALTER TABLE Repair
 	ADD
@@ -389,14 +398,7 @@ ALTER TABLE Repair
 	CONSTRAINT DK_Repair_RepairStatus
 	DEFAULT 'P' FOR RepairStatus;
 
-ALTER TABLE HousekeepingRoom
-	ADD
-	
-	CONSTRAINT CK_HousekeepingRoom_RoomStatus
-	CHECK (RoomStatus IN ('A', 'R')),
 
-	CONSTRAINT DK_HousekeepingRoom_RoomStatus
-	DEFAULT 'A' FOR RoomStatus;
 
 GO
 
