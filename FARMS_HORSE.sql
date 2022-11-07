@@ -84,7 +84,7 @@ CREATE TABLE Housekeeping
 	EmployeeID				smallint			NOT NULL,
 	HousekeepingRoomID		smallint			NOT NULL,
 	FolioID					smallint			NOT NULL,
-	ReportStatus			char(1)				NOT NULL,
+	HousekeepingStatus		char(1)				NOT NULL,
 	TimeCompleted			smalldatetime		NULL
 );
 
@@ -374,11 +374,11 @@ ALTER TABLE HousekeepingService
 ALTER TABLE Housekeeping
 	ADD
 	
-	CONSTRAINT CK_Housekeeping_ReportStatus
-	CHECK (ReportStatus IN ('P', 'C', 'X')),
+	CONSTRAINT CK_Housekeeping_HousekeepingStatus
+	CHECK (HousekeepingStatus IN ('P', 'C', 'X')),
 
-	CONSTRAINT DK_Housekeeping_ReportStatus
-	DEFAULT 'P' FOR ReportStatus;
+	CONSTRAINT DK_Housekeeping_HousekeepingStatus
+	DEFAULT 'P' FOR HousekeepingStatus;
 
 ALTER TABLE Repair
 	ADD
