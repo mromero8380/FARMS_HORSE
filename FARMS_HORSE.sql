@@ -478,3 +478,4 @@ VALUES
 ('Replace king bed', 375, 'King size bed replacement', 30),
 ('Repair wall damage', 40, 'Replace drywall and paint', 90);
 
+BULK INSERT Housekeeping FROM 'C:\Stage\Horse\Housekeeping.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
