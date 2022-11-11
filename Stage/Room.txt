@@ -1,0 +1,19 @@
+|201|Single - Second Floor - Downtown View|0|F|2100|1
+|202|Single - Second Floor - Ski Resort View|0|F|2100|1
+|301|Double - Third Floor - Downtown View|0|2Q|2100|3
+|302|Double - Third Floor - Ski Resort View|0|K|2100|3
+|303|Double - Third Floor - Downtown View|0|K|2100|3
+|304|Family - Third Floor - Ski Resort View|0|2Q|2100|4
+|305|Family - Third Floor - Downtown View|0|2Q|2100|4
+|101|Single - First Floor - Smoking|1|F|2200|5
+|102|Double - First Floor - Non-Smoking|0|2Q|2200|2
+|204|Double - Seond Floor - Non-Smoking|0|2Q|2200|2
+|241|Double - Seond Floor - Non-Smoking|0|K|2200|2
+|242|Double - Second Floor - Smoking|1|K|2200|6
+|351|Family - Third Floor - Non-Smoking|0|2Q|2200|4
+|352|Family - Third Floor - Non-Smoking|0|2Q|2200|4
+|221|Single - New Wing - Non-Smoking|0|F|2300|8
+|222|Double - New Wing - Non-Smoking|0|K|2300|9
+|223|Double - Old Wing - Smoking|1|2F|2300|6
+|321|Suite - Smoking|1|2Q|2300|7
+|322|Suite - Non-Smoking|0|2Q|2300|10

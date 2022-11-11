@@ -1,0 +1,4 @@
+|Salt Lake County UT|12.10|6.85
+|Summit County UT|12.75|7.50
+|Davis County UT|11.25|7.15
+|Weber County UT|11.25|7.15
