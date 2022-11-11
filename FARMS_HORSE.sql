@@ -6,10 +6,9 @@
 
 --Check to see if the database already exists and delete if it does
 USE master;
+GO
 
-IF EXISTS (SELECT * FROM sysdatabases WHERE name='FARMS_HORSE')
-DROP DATABASE FARMS_HORSE;
-
+DROP DATABASE IF EXISTS FARMS_HORSE;
 GO
 
 --Creates the FARMS_HORSE database with specifications
@@ -408,74 +407,12 @@ BULK INSERT FARMS_RoomType FROM 'C:\Stage\RoomType.txt' WITH (FIELDTERMINATOR = 
 BULK INSERT FARMS_Hotel FROM 'C:\Stage\Hotel.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT FARMS_Room FROM 'C:\Stage\Room.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT FARMS_Folio FROM 'C:\Stage\Folio.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+
+BULK INSERT Position FROM 'C:\Stage\Horse\Position.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Employee FROM 'C:\Stage\Horse\Employee.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
-
-GO
-
---Adding Data for the Database with Regular Inserts
-INSERT INTO Position(PositionName, PositionDescription)
-VALUES
-('Housekeeper', 'Cleans hotel rooms'),
-('Repairs', 'Fixes problems with hotel rooms');
-
-INSERT INTO HousekeepingRoomType (RoomTypeID, EstimatedCleanTime)
-(SELECT DISTINCT RoomTypeID, 30 FROM FARMS_Room);
-
-INSERT INTO HousekeepingRoom (RoomID, HousekeepingRoomTypeID, RoomStatus)
-(SELECT RoomID, RoomTypeID, 'A' FROM FARMS_Room);
-
-INSERT INTO ServiceType (ServiceName, ServiceCost, ServiceDescription)
-VALUES
-('Vacuum Carpets', 0, 'Vacuum the carpets'),
-('Change and clean bedding', 0, 'Replace with clean bedding and wash used bedding'),
-('Clean bathroom floor', 0, 'Clean/disinfect and dry floor'),
-('Clean toilet', 0, 'Clean the bowl, top, and around'),
-('Restock toiletries (complementary)', 0, 'Soap, shampoo, conditioner, body wash, and lotion'),
-('Restock toiletries', 5, 'Soap, shampoo, conditioner, body wash, and lotion'),
-('Clean shower/bath', 0, 'Scrub walls and floor'),
-('Clean sink', 0, 'Clean in and around sink'),
-('Change shower mat', 0, 'Replace with clean mat and wash used mat'),
-('Replace damaged/missing shower mat', 15, 'Replace with clean mat if damaged or missing'),
-('Clean mirror', 0, 'Wipe and don''t leave streaks'),
-('Clean vents', 0, 'Wipe and disinfect'),
-('Clean fridge', 0, 'Clean inside and outside and throw trash out'),
-('Clean minibar', 0, 'Dispose of trash and wipe down'),
-('Reset room temperature', 0, 'Temperature room comfortable upon arrival'),
-('Check room HVAC', 0, 'All systems are in working comdition'),
-('Room lock functional', 0, 'Locks and doesn''t stick'),
-('Clean/test telephone', 0, 'Disinfect and test calling room service'),
-('Clean/test TV', 0, 'Disinfect and test channels/volume/power'),
-('Clean TV remote', 0, 'Disinfect and test channels/volume/power, check batteries'),
-('Electrical outlets functional', 0, 'Test ALL outlets'),
-('Clean windows', 0, 'Clean and don''t leave streaks'),
-('Clean outdoor furniture', 0, 'Spray and wipe off'),
-('Clean curtains', 0, 'Clean stains, replace with clean curtains and wash if needed'),
-('Replace damaged/missing clothes hangers', 15, 'Ensure each room has at least 3 hangers'),
-('Replace damaged/missing hair dryer', 40.50, 'Check functionality before replacing'),
-('Replace damaged/missing TV remote', 35, 'Check functionality before replacing'),
-('Restock minibar water (complementary)', 0, 'Restock 4 water bottles'),
-('Restock minibar water', 10, 'Restock 4 water bottles'),
-('Restock minibar wine (complementary)', 0, 'Restock 1 wine bottle'),
-('Restock minibar wine', 40, 'Restock 1 wine bottle'),
-('Replace damaged/missing bedding', 55, 'Clean twice for stains before charging for replacement.'),
-('Replace damaged/missing pillows', 20, 'Clean twice for stains before charging for replacement.'),
-('Replace damaged/missing curtains', 100, 'Clean twice for stains before charging for replacement.');
-
-INSERT INTO RepairType(RepairName, RepairCost, RepairDescription, EstimatedRepairTime)
-VALUES
-('Repair toilet flush valve', 30, 'Fix or replace flush valve', 15),
-('Replace toilet', 150, 'Remove and replace whole toilet assembly', 120),
-('Replace mirror', 60, 'Replace broken mirror', 15),
-('Repair/replace showerhead', 30, 'Replace or repair showerhead', 15),
-('Repair bathroom floor', 50, 'Repair damaged/broken floor tile', 120),
-('Repair door lock', 0, 'Repair broken door lock', 30),
-('Replace door', 80, 'Replace damaged front door', 60),
-('Repair TV', 0, 'Repair TV electrical issue', 60),
-('Replace TV', 200, 'Replace damaged TV', 15),
-('Replace nightstand', 30, 'Damaged nightstand replacement', 60),
-('Replace double bed', 100, 'Double size bed replacement', 30),
-('Replace queen bed', 235, 'Queen size bed replacement', 30),
-('Replace king bed', 375, 'King size bed replacement', 30),
-('Repair wall damage', 40, 'Replace drywall and paint', 90);
-
+BULK INSERT EmployeeWeeklyShift FROM 'C:\Stage\Horse\EmployeeWeeklyShift.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT HousekeepingRoomType FROM 'C:\Stage\Horse\HousekeepingRoomType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT HousekeepingRoom FROM 'C:\Stage\Horse\HousekeepingRoom.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT ServiceType FROM 'C:\Stage\Horse\ServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT RepairType FROM 'C:\Stage\Horse\RepairType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Housekeeping FROM 'C:\Stage\Horse\Housekeeping.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);

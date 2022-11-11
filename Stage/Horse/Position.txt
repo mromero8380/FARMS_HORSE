@@ -1,0 +1,2 @@
+|Housekeeper|Cleans hotel rooms
+|Repairs|Fixes problems with hotel rooms
