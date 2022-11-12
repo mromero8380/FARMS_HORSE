@@ -653,7 +653,7 @@ ALTER TABLE HousekeepingService
 	ADD
 	
 	CONSTRAINT CK_HousekeepingService_ServiceStatus
-	CHECK (ServiceStatus IN ('C', 'R', 'X')),
+	CHECK (ServiceStatus IN ('P', 'C', 'R', 'X')),
 
 	CONSTRAINT DK_HousekeepingService_ServiceStatus
 	DEFAULT 'C' FOR ServiceStatus;
@@ -777,13 +777,6 @@ SELECT dbo.fn_GetAvailableEmployee(2100, 1, GETDATE(), 30); -- 3008 on friday
 SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
 
 
-------------------------------------
--- fn_GetDefaultHousekeepingServices
-------------------------------------
-
---Gets a table with the default Housekeeping Services for a given RoomTypeID.
-
-
 ----------------------
 -- fn_GetFolioRoomType
 ----------------------
@@ -818,6 +811,90 @@ SELECT dbo.fn_GetFolioRoomType(1); -- 8
 SELECT dbo.fn_GetFolioRoomType(2); -- 2
 SELECT dbo.fn_GetFolioRoomType(3); -- 2
 
+
+------------------------------------
+-- fn_GetDefaultHousekeepingServices
+------------------------------------
+
+--Gets a table with the default Housekeeping Services for a given RoomTypeID.
+
+GO
+CREATE FUNCTION fn_GetDefaultHousekeepingServices
+(
+	@FolioID					SMALLINT
+)
+RETURNS @DefaultServices TABLE
+(
+	ServiceTypeID				SMALLINT,
+	ServiceStatus				CHAR(1)
+)
+AS
+	BEGIN
+		DECLARE @RoomTypeID					SMALLINT;
+		SELECT @RoomTypeID = dbo.fn_GetFolioRoomType(@FolioID);
+
+		INSERT INTO @DefaultServices(ServiceTypeID, ServiceStatus)
+		(SELECT ServiceTypeID, 'P'
+		FROM ServiceType
+		WHERE ServiceType.IsDefaultService = 1);
+
+		INSERT INTO @DefaultServices (ServiceTypeID, ServiceStatus)
+		(SELECT ServiceType.ServiceTypeID, 'P'
+		FROM DefaultServiceType
+		INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
+		INNER JOIN HousekeepingRoomType ON (DefaultServiceType.HousekeepingRoomTypeID = HousekeepingRoomType.HousekeepingRoomTypeID)
+		WHERE HousekeepingRoomType.RoomTypeID = @RoomTypeID
+		AND ServiceType.IsDefaultService = 0);
+
+		RETURN;
+	END
+GO
+
+-- TEST
+
+-- Folio 17, RoomType 7
+PRINT'Testing Folio 17, RoomType 7';
+SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
+FROM fn_GetDefaultHousekeepingServices(17) AS DefaultServices
+INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
+
+PRINT '';
+PRINT 'Checking all default services';
+-- Check all default services
+SELECT ServiceTypeID, ServiceName
+FROM ServiceType
+WHERE IsDefaultService = 1;
+
+PRINT '';
+PRINT 'Checking default services for RoomType 7';
+-- Check RoomType 7 has the same services
+SELECT DefaultServiceType.ServiceTypeID, ServiceName
+FROM DefaultServiceType
+INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
+WHERE HousekeepingRoomTypeID = 7;
+
+
+-- Folio 19, RoomType 4
+PRINT'Testing Folio 19, RoomType 4';
+SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
+FROM fn_GetDefaultHousekeepingServices(19) AS DefaultServices
+INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
+
+PRINT '';
+PRINT 'Checking all default services';
+-- Check all default services
+SELECT ServiceTypeID, ServiceName
+FROM ServiceType
+WHERE IsDefaultService = 1;
+
+PRINT '';
+PRINT 'Checking default services for RoomType 4';
+-- Check RoomType 7 has the same services
+SELECT DefaultServiceType.ServiceTypeID, ServiceName
+FROM DefaultServiceType
+INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
+WHERE HousekeepingRoomTypeID = 4;
+GO
 
 ----------------------
 -- fn_GetAvailableRoom
@@ -962,6 +1039,32 @@ ORDER BY EmployeeLastName;
 --------------------------------
 
 --Inserts default housekeeping services for a housekeeping record based on the room type.
+
+GO
+CREATE PROCEDURE sp_InsertHousekeepingServices
+(
+	@HousekeepingID				SMALLINT
+)
+AS
+	DECLARE @FolioID				SMALLINT;
+
+	SELECT @FolioID					= FolioID 
+	FROM Housekeeping WHERE HousekeepingID = @HousekeepingID;
+
+	INSERT INTO HousekeepingService (HousekeepingID, ServiceTypeID, ServiceStatus)
+	(SELECT @HousekeepingID, DefaultServices.ServiceTypeID, DefaultServices.ServiceStatus
+	FROM fn_GetDefaultHousekeepingServices(@FolioID) AS DefaultServices);
+GO
+
+-- TEST
+SELECT * FROM Housekeeping;
+EXEC sp_InsertHousekeepingServices 
+	@HousekeepingID = 2;
+
+SELECT HousekeepingService.HousekeepingID, HousekeepingService.HousekeepingServiceID, ServiceType.ServiceName, HousekeepingService.ServiceStatus
+FROM HousekeepingService
+INNER JOIN ServiceType ON (HousekeepingService.ServiceTypeID = ServiceType.ServiceTypeID)
+WHERE HousekeepingService.HousekeepingID = 2;
 
 
 --------------------------
