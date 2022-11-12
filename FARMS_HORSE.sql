@@ -489,6 +489,14 @@ CREATE TABLE ServiceType
 	IsDefaultService		bit					NOT NULL
 );
 
+--Creates the DefaultServiceType table
+CREATE TABLE DefaultServiceType
+(
+	DefaultServiceTypeID	smallint			NOT NULL		IDENTITY(1,1),
+	ServiceTypeID			smallint			NOT NULL,
+	HousekeepingRoomTypeID	smallint			NOT NULL
+);
+
 --Creates the RepairType Table
 CREATE TABLE RepairType
 (
@@ -671,6 +679,7 @@ BULK INSERT HousekeepingRoomType FROM 'C:\Stage\Horse\HousekeepingRoomType.txt' 
 BULK INSERT HousekeepingRoom FROM 'C:\Stage\Horse\HousekeepingRoom.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT ServiceType FROM 'C:\Stage\Horse\ServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT RepairType FROM 'C:\Stage\Horse\RepairType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT DefaultServiceType FROM 'C:\Stage\Horse\DefaultServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Housekeeping FROM 'C:\Stage\Horse\Housekeeping.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 
 GO

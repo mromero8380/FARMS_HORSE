@@ -32,3 +32,4 @@
 |Replace damaged/missing bedding|55.00|Clean twice for stains before charging for replacement.|0
 |Replace damaged/missing pillows|20.00|Clean twice for stains before charging for replacement.|0
 |Replace damaged/missing curtains|100.00|Clean twice for stains before charging for replacement.|0
+|Empty trash|0.00|Empty trash cans and remove garbage|1
