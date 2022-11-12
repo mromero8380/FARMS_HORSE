@@ -485,7 +485,8 @@ CREATE TABLE ServiceType
 	ServiceTypeID			smallint			NOT NULL		IDENTITY(1,1),
 	ServiceName				varchar(128)		NOT NULL,
 	ServiceCost				smallmoney			NOT NULL,
-	ServiceDescription		varchar(256)		NULL
+	ServiceDescription		varchar(256)		NULL,
+	IsDefaultService		bit					NOT NULL
 );
 
 --Creates the RepairType Table
