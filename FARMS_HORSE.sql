@@ -780,6 +780,34 @@ SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
 
 --Gets a RoomTypeID from a given FolioID.
 
+GO
+CREATE FUNCTION fn_GetFolioRoomType
+(
+	@FolioID					SMALLINT
+)
+RETURNS SMALLINT
+AS
+	BEGIN
+		DECLARE @RoomTypeID					SMALLINT;
+		DECLARE @Query						TABLE(
+			FolioID								SMALLINT,
+			RoomTypeID							SMALLINT
+		);
+
+		INSERT INTO @Query SELECT * 
+		FROM OPENQUERY(LOCALSERVER, 'Select Folio.FolioID, Room.RoomTypeID FROM FARMS.dbo.Folio INNER JOIN FARMS.dbo.Room ON (Folio.RoomID = Room.RoomID);');
+
+		SELECT @RoomTypeID = RoomTypeID FROM @Query WHERE FolioID = @FolioID;
+
+		RETURN @RoomTypeID;
+	END
+GO
+
+-- TEST
+SELECT dbo.fn_GetFolioRoomType(1); -- 8
+SELECT dbo.fn_GetFolioRoomType(2); -- 2
+SELECT dbo.fn_GetFolioRoomType(3); -- 2
+
 
 ----------------------
 -- fn_GetAvailableRoom
@@ -787,12 +815,132 @@ SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
 
 --Gets the RoomID of an available room at the same hotel on the specified date.
 
+GO
+CREATE FUNCTION fn_GetAvailableRoom
+(
+	@UnavailableRoomID					SMALLINT
+)
+RETURNS SMALLINT
+AS
+	BEGIN
+		DECLARE @RoomID						SMALLINT;
+		DECLARE @HotelID					SMALLINT;
+		DECLARE @RoomTypeID					SMALLINT;
+
+		DECLARE @Query						TABLE(
+			RoomID						SMALLINT,
+			HotelID						SMALLINT,
+			RoomTypeID					SMALLINT
+		);
+
+		INSERT INTO @Query SELECT * 
+		FROM OPENQUERY(LOCALSERVER, 'Select RoomID, HotelID, RoomTypeID FROM FARMS.dbo.Room');
+
+		-- Get the room type and hotel of the unavailable room
+		SELECT	@HotelID				= HotelID, 
+				@RoomTypeID				= RoomTypeID 
+		FROM @Query WHERE RoomID = @UnavailableRoomID;
+
+		-- Select the first available room with the same room type in the same hotel
+		SELECT TOP(1) @RoomID = Query.RoomID
+		FROM @Query AS Query
+		INNER JOIN HousekeepingRoom ON (Query.RoomID = HousekeepingRoom.RoomID)
+		WHERE Query.HotelID = @HotelID
+		AND Query.RoomTypeID = @RoomTypeID
+		AND HousekeepingRoom.RoomStatus = 'A';
+
+		RETURN @RoomID;
+	END
+GO
+
+-- TEST
+SELECT dbo.fn_GetAvailableRoom(5); -- 3
 
 -------------------------------
 -- fn_GetEmployeeWeeklySchedule
 -------------------------------
 
 --Gets a table showing every employee's weekly schedule for the given date.
+
+GO
+CREATE FUNCTION fn_GetEmployeeWeeklySchedule
+(
+	@HotelID					SMALLINT
+)
+RETURNS @Schedule TABLE
+(
+	EmployeeID					SMALLINT,
+	EmployeeFirstName			VARCHAR(32),
+	EmployeeLastName			VARCHAR(32),
+	SundaySchedule				CHAR(19),
+	MondaySchedule				CHAR(19),
+	TuesdaySchedule				CHAR(19),
+	WednesdaySchedule			CHAR(19),
+	ThursdaySchedule			CHAR(19),
+	FridaySchedule				CHAR(19),
+	SaturdaySchedule			CHAR(19)
+)
+AS
+	BEGIN
+		DECLARE @EmployeeID					SMALLINT;
+		DECLARE @DayOfWeek					TINYINT;
+		DECLARE @ShiftStart					TIME;
+		DECLARE @ShiftEnd					TIME;
+
+		INSERT INTO @Schedule
+		SELECT EmployeeID, EmployeeFirstName, EmployeeLastName, ' ', ' ', ' ', ' ', ' ', ' ', ' '
+		FROM Employee
+		WHERE HotelID = @HotelID;
+
+		-- Loop through the shifts of all the employees in the specified hotel
+		DECLARE cursor_EmployeeWeeklyShift CURSOR
+			FOR
+				SELECT Employee.EmployeeID, DayOfWeek, ShiftStart, ShiftEnd
+				FROM EmployeeWeeklyShift
+				INNER JOIN Employee ON (EmployeeWeeklyShift.EmployeeID = Employee.EmployeeID)
+				WHERE HotelID = @HotelID
+				AND ShiftStatus = 'S'; -- Don't schedule employees on vacation
+
+		OPEN cursor_EmployeeWeeklyShift;
+		FETCH NEXT FROM cursor_EmployeeWeeklyShift INTO @EmployeeID, @DayOfWeek, @ShiftStart, @ShiftEnd;
+
+		WHILE @@FETCH_STATUS = 0
+			BEGIN
+				UPDATE @Schedule SET
+				SundaySchedule = CASE WHEN (@DayOfWeek = 1) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE SundaySchedule END,
+				MondaySchedule = CASE WHEN (@DayOfWeek = 2) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE MondaySchedule END,
+				TuesdaySchedule = CASE WHEN (@DayOfWeek = 3) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE TuesdaySchedule END,
+				WednesdaySchedule = CASE WHEN (@DayOfWeek = 4) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE WednesdaySchedule END,
+				ThursdaySchedule = CASE WHEN (@DayOfWeek = 5) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE ThursdaySchedule END,
+				FridaySchedule = CASE WHEN (@DayOfWeek = 6) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE FridaySchedule END,
+				SaturdaySchedule = CASE WHEN (@DayOfWeek = 7) THEN CONCAT(FORMAT(CAST(@ShiftStart AS DATETIME), 'hh:mm tt'), ' - ', FORMAT(CAST(@ShiftEnd AS DATETIME), 'hh:mm tt'))
+					ELSE SaturdaySchedule END
+				WHERE EmployeeID = @EmployeeID
+
+				FETCH NEXT FROM cursor_EmployeeWeeklyShift INTO @EmployeeID, @DayOfWeek, @ShiftStart, @ShiftEnd;
+			END
+		CLOSE cursor_EmployeeWeeklyShift;
+		DEALLOCATE cursor_EmployeeWeeklyShift;
+
+		RETURN;
+	END
+GO
+
+-- TEST
+SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2100)
+ORDER BY EmployeeLastName;
+
+SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2200)
+ORDER BY EmployeeLastName;
+
+SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2300)
+ORDER BY EmployeeLastName;
 
 
 ---------------------------------------------------------------------------------------------
