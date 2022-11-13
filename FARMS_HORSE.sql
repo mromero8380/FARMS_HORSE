@@ -681,6 +681,7 @@ BULK INSERT ServiceType FROM 'C:\Stage\Horse\ServiceType.txt' WITH (FIELDTERMINA
 BULK INSERT RepairType FROM 'C:\Stage\Horse\RepairType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT DefaultServiceType FROM 'C:\Stage\Horse\DefaultServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Housekeeping FROM 'C:\Stage\Horse\Housekeeping.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
+BULK INSERT Repair FROM 'C:\Stage\Horse\Repair.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 
 GO
 
@@ -775,6 +776,14 @@ GO
 -- TEST
 SELECT dbo.fn_GetAvailableEmployee(2100, 1, GETDATE(), 30); -- 3008 on friday
 SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
+
+
+------------------------------------
+-- fn_GetDefaultHousekeepingServices
+------------------------------------
+
+--Gets a table with the default Housekeeping Services for a given RoomTypeID.
+
 
 
 ----------------------
@@ -1087,7 +1096,7 @@ WHERE HousekeepingService.HousekeepingID = 2;
 ---------------------------------------------------------------------------------------------
 
 ------------------------
--- tr_InsertHousekeeping
+-- tr_InsertHousekeeping - LEAVE FOR LATER DUE TO CROSS DATABASE ACCESSIBILITY
 ------------------------
 
 --Inserts a row into Housekeeping when a Folio's status changes to 'C'.
@@ -1100,6 +1109,36 @@ WHERE HousekeepingService.HousekeepingID = 2;
 --Checks to see if the given EmployeeID is a Housekeeper. Rejects the change if the
 --EmployeePositionID doesn't match.
 
+GO
+
+CREATE TRIGGER tr_CheckHousekeepingEmployee ON Housekeeping
+INSTEAD OF INSERT
+AS
+	BEGIN
+		
+		DECLARE @EmployeeID smallint
+
+		SET @EmployeeID = (SELECT EmployeeID FROM Inserted)
+
+		IF ((SELECT PositionID FROM Employee WHERE EmployeeID = @EmployeeID) != 1)
+		BEGIN
+			RAISERROR ('EmployeeID is not a Housekeeper, please choose an employee that is a houskeeper.', 16, 1)
+			ROLLBACK
+		END
+
+	END
+
+GO
+
+--Tests
+
+INSERT INTO Housekeeping
+VALUES (3000, 3, 4, 'X', NULL);
+
+INSERT INTO Housekeeping
+VALUES (3005, 3, 4, 'X', NULL);
+
+GO
 
 -------------------------
 -- tr_CheckRepairEmployee
@@ -1108,6 +1147,34 @@ WHERE HousekeepingService.HousekeepingID = 2;
 --Checks to see if the given EmployeeID is a Repairperson. Rejects the change if the 
 --EmployeePositionID doesn't match.
 
+GO
+
+CREATE TRIGGER tr_CheckRepairEmployee ON Repair
+INSTEAD OF INSERT
+AS
+	BEGIN
+		DECLARE @EmployeeID smallint
+
+		SET @EmployeeID = (SELECT EmployeeID FROM Inserted)
+
+		IF ((SELECT PositionID FROM Employee WHERE EmployeeID = @EmployeeID) != 2)
+		BEGIN
+			RAISERROR ('EmployeeID is not a Repairs, please choose an employee that is a Repairs.', 16, 1)
+			ROLLBACK
+		END
+	END
+
+GO
+
+-- Tests
+
+INSERT INTO Repair
+VALUES (3005, 3, 4, 1, 'P', NULL, NULL);
+
+INSERT INTO Repair
+VALUES (3000, 3, 4, 1, 'P', NULL, NULL);
+
+GO
 
 ----------------------------
 -- tr_UpdateRoomAvailability
@@ -1116,6 +1183,45 @@ WHERE HousekeepingService.HousekeepingID = 2;
 --Checks to see if a room has any outstanding repairs, and if not, sets the room as available 
 --for reservations.
 
+GO
+
+CREATE TRIGGER tr_UpdateRoomAvailability ON Repair
+AFTER INSERT, UPDATE
+AS
+	DECLARE @RepairStatus char(1)
+	DECLARE @HousekeepingRoomID smallint
+
+	SELECT @RepairStatus = (SELECT RepairStatus FROM Inserted)
+	SELECT @HousekeepingRoomID = (SELECT HousekeepingRoomID FROM Inserted)
+		
+	IF UPDATE(RepairStatus) AND @RepairStatus != 'P'
+		IF NOT EXISTS 
+		(
+			SELECT HousekeepingRoomID
+			FROM Repair 
+			WHERE HousekeepingRoomID = @HousekeepingRoomID
+		)
+		BEGIN
+			UPDATE HousekeepingRoom
+			SET RoomStatus = 'A'
+			WHERE HousekeepingRoomID = @HousekeepingRoomID
+		END
+GO
+
+-- Tests
+
+UPDATE Repair
+SET RepairStatus = 'C'
+WHERE RepairID = 6
+
+UPDATE Repair
+SET RepairStatus = 'C'
+WHERE RepairID = 18
+
+SELECT * FROM HousekeepingRoom
+
+SELECT * FROM Repair
+GO
 
 ------------------------------
 -- tr_CheckHousekeepingCharges
@@ -1134,7 +1240,7 @@ WHERE HousekeepingService.HousekeepingID = 2;
 
 
 ---------------------------
--- tr_CheckRoomAvailability
+-- tr_CheckRoomAvailability - LEAVE FOR LATER DUE TO CROSS DATABASE ACCESSIBILITY
 ---------------------------
 
 --When a new reservation is created, checks to see if the specified RoomID is available. If 
