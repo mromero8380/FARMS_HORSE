@@ -1,16 +1,13 @@
-USE FARMS_HORSE;
-GO
-
 -- This example demonstrates the functionality of:
 
--- tr_InsertHousekeeping
+-- sp_InsertHousekeeping
 -- fn_GetAvailableEmployee
 -- sp_InsertHousekeepingServices
 -- fn_GetDefaultHousekeepingServices
 -- fn_GetFolioRoomType
 
--- tr_CheckHousekeepingEmployee //TODO
--- tr_CheckRepairEmployee //TODO
+USE FARMS_HORSE;
+GO
 
 
 -- Show housekeeping services
@@ -21,9 +18,6 @@ SELECT ServiceTypeID, CAST(ServiceName AS CHAR(40)) ServiceName, ServiceCost, CA
 FROM ServiceType
 ORDER BY ServiceCost, IsDefaultService DESC;
 PRINT '';
-
-
-
 
 
 PRINT 'Showing that some room types have additional default housekeeping services: ';
@@ -70,7 +64,7 @@ WHERE FolioID IN (
 
 
 ------------------------
--- tr_InsertHousekeeping
+-- sp_InsertHousekeeping
 ------------------------
 
 --Inserts a row into Housekeeping when a Folio's status changes to 'C'.
@@ -220,8 +214,8 @@ AS
 	FROM Housekeeping WHERE HousekeepingID = @HousekeepingID;
 
 	INSERT INTO HousekeepingService (HousekeepingID, ServiceTypeID, ServiceStatus)
-		(SELECT @HousekeepingID, DefaultServices.ServiceTypeID, DefaultServices.ServiceStatus
-		FROM fn_GetDefaultHousekeepingServices(@FolioID) AS DefaultServices);
+	(SELECT @HousekeepingID, DefaultServices.ServiceTypeID, DefaultServices.ServiceStatus
+	FROM fn_GetDefaultHousekeepingServices(@FolioID) AS DefaultServices);
 GO
 
 
