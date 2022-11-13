@@ -350,6 +350,9 @@ BULK INSERT Folio FROM 'C:\Stage\Folio.txt' WITH (FIELDTERMINATOR = '|', FIRSTRO
 BULK INSERT Payment FROM 'C:\Stage\Payment.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Billing FROM 'C:\Stage\Billing.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 
+INSERT INTO BillingCategory VALUES ('Housekeeping', 0); --BillingCategoryID 10
+INSERT INTO BillingCategory VALUES ('Room Repairs', 0); --BillingCategoryID 11
+
 GO
 
 
@@ -680,7 +683,6 @@ BULK INSERT HousekeepingRoom FROM 'C:\Stage\Horse\HousekeepingRoom.txt' WITH (FI
 BULK INSERT ServiceType FROM 'C:\Stage\Horse\ServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT RepairType FROM 'C:\Stage\Horse\RepairType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT DefaultServiceType FROM 'C:\Stage\Horse\DefaultServiceType.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
-BULK INSERT Housekeeping FROM 'C:\Stage\Horse\Housekeeping.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 BULK INSERT Repair FROM 'C:\Stage\Horse\Repair.txt' WITH (FIELDTERMINATOR = '|', FIRSTROW = 1);
 
 GO
@@ -694,7 +696,7 @@ GO
 
 SELECT *
 FROM OPENQUERY (LOCALSERVER, 'Select * FROM FARMS.dbo.Guest') AS FARMS_Guest;
-
+GO
 
 ---------------------------------------------------------------------------------------------
 --                                        FUNCTIONS                                        --
@@ -774,8 +776,9 @@ AS
 GO
 
 -- TEST
-SELECT dbo.fn_GetAvailableEmployee(2100, 1, GETDATE(), 30); -- 3008 on friday
-SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
+--SELECT dbo.fn_GetAvailableEmployee(2100, 1, GETDATE(), 30); -- 3008 on friday
+--SELECT dbo.fn_GetAvailableEmployee(2200, 2, GETDATE(), 30); -- null on friday
+--GO
 
 
 ----------------------
@@ -808,9 +811,10 @@ AS
 GO
 
 -- TEST
-SELECT dbo.fn_GetFolioRoomType(1); -- 8
-SELECT dbo.fn_GetFolioRoomType(2); -- 2
-SELECT dbo.fn_GetFolioRoomType(3); -- 2
+--SELECT dbo.fn_GetFolioRoomType(1); -- 8
+--SELECT dbo.fn_GetFolioRoomType(2); -- 2
+--SELECT dbo.fn_GetFolioRoomType(3); -- 2
+--GO
 
 
 ------------------------------------
@@ -854,48 +858,49 @@ GO
 -- TEST
 
 -- Folio 17, RoomType 7
-PRINT'Testing Folio 17, RoomType 7';
-SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
-FROM fn_GetDefaultHousekeepingServices(17) AS DefaultServices
-INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
+--PRINT'Testing Folio 17, RoomType 7';
+--SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
+--FROM fn_GetDefaultHousekeepingServices(17) AS DefaultServices
+--INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
 
-PRINT '';
-PRINT 'Checking all default services';
--- Check all default services
-SELECT ServiceTypeID, ServiceName
-FROM ServiceType
-WHERE IsDefaultService = 1;
+--PRINT '';
+--PRINT 'Checking all default services';
+---- Check all default services
+--SELECT ServiceTypeID, ServiceName
+--FROM ServiceType
+--WHERE IsDefaultService = 1;
 
-PRINT '';
-PRINT 'Checking default services for RoomType 7';
--- Check RoomType 7 has the same services
-SELECT DefaultServiceType.ServiceTypeID, ServiceName
-FROM DefaultServiceType
-INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
-WHERE HousekeepingRoomTypeID = 7;
+--PRINT '';
+--PRINT 'Checking default services for RoomType 7';
+---- Check RoomType 7 has the same services
+--SELECT DefaultServiceType.ServiceTypeID, ServiceName
+--FROM DefaultServiceType
+--INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
+--WHERE HousekeepingRoomTypeID = 7;
 
 
--- Folio 19, RoomType 4
-PRINT'Testing Folio 19, RoomType 4';
-SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
-FROM fn_GetDefaultHousekeepingServices(19) AS DefaultServices
-INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
+---- Folio 19, RoomType 4
+--PRINT'Testing Folio 19, RoomType 4';
+--SELECT DefaultServices.ServiceTypeID, ServiceType.ServiceName
+--FROM fn_GetDefaultHousekeepingServices(19) AS DefaultServices
+--INNER JOIN ServiceType ON (DefaultServices.ServiceTypeID = ServiceType.ServiceTypeID);
 
-PRINT '';
-PRINT 'Checking all default services';
--- Check all default services
-SELECT ServiceTypeID, ServiceName
-FROM ServiceType
-WHERE IsDefaultService = 1;
+--PRINT '';
+--PRINT 'Checking all default services';
+---- Check all default services
+--SELECT ServiceTypeID, ServiceName
+--FROM ServiceType
+--WHERE IsDefaultService = 1;
 
-PRINT '';
-PRINT 'Checking default services for RoomType 4';
--- Check RoomType 7 has the same services
-SELECT DefaultServiceType.ServiceTypeID, ServiceName
-FROM DefaultServiceType
-INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
-WHERE HousekeepingRoomTypeID = 4;
-GO
+--PRINT '';
+--PRINT 'Checking default services for RoomType 4';
+---- Check RoomType 7 has the same services
+--SELECT DefaultServiceType.ServiceTypeID, ServiceName
+--FROM DefaultServiceType
+--INNER JOIN ServiceType ON (DefaultServiceType.ServiceTypeID = ServiceType.ServiceTypeID)
+--WHERE HousekeepingRoomTypeID = 4;
+--GO
+
 
 ----------------------
 -- fn_GetAvailableRoom
@@ -942,7 +947,9 @@ AS
 GO
 
 -- TEST
-SELECT dbo.fn_GetAvailableRoom(5); -- 3
+--SELECT dbo.fn_GetAvailableRoom(5); -- 3
+--GO
+
 
 -------------------------------
 -- fn_GetEmployeeWeeklySchedule
@@ -1022,14 +1029,15 @@ AS
 GO
 
 -- TEST
-SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2100)
-ORDER BY EmployeeName;
+--SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2100)
+--ORDER BY EmployeeName;
 
-SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2200)
-ORDER BY EmployeeName;
+--SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2200)
+--ORDER BY EmployeeName;
 
-SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2300)
-ORDER BY EmployeeName;
+--SELECT * FROM dbo.fn_GetEmployeeWeeklySchedule(2300)
+--ORDER BY EmployeeName;
+--GO
 
 
 ---------------------------------------------------------------------------------------------
@@ -1059,14 +1067,15 @@ AS
 GO
 
 -- TEST
-SELECT * FROM Housekeeping;
-EXEC sp_InsertHousekeepingServices 
-	@HousekeepingID = 2;
+--SELECT * FROM Housekeeping;
+--EXEC sp_InsertHousekeepingServices 
+--	@HousekeepingID = 2;
 
-SELECT HousekeepingService.HousekeepingID, HousekeepingService.HousekeepingServiceID, ServiceType.ServiceName, HousekeepingService.ServiceStatus
-FROM HousekeepingService
-INNER JOIN ServiceType ON (HousekeepingService.ServiceTypeID = ServiceType.ServiceTypeID)
-WHERE HousekeepingService.HousekeepingID = 2;
+--SELECT HousekeepingService.HousekeepingID, HousekeepingService.HousekeepingServiceID, ServiceType.ServiceName, HousekeepingService.ServiceStatus
+--FROM HousekeepingService
+--INNER JOIN ServiceType ON (HousekeepingService.ServiceTypeID = ServiceType.ServiceTypeID)
+--WHERE HousekeepingService.HousekeepingID = 2;
+--GO
 
 
 --------------------------
@@ -1075,6 +1084,41 @@ WHERE HousekeepingService.HousekeepingID = 2;
 
 --If a housekeeping service or repair has an additional charge, insert a new row into Billing 
 --under the given FolioID for that cost.
+
+GO
+CREATE PROCEDURE sp_InsertBillingCharges
+(
+	@FolioID					SMALLINT,
+	@BillingType				TINYINT
+)
+AS
+	-- Housekeeping has been completed
+	IF (@BillingType = 1)
+		BEGIN
+			-- Insert extra housekeeping charges
+			INSERT INTO [FARMS].[dbo].[Billing] (FolioID, BillingCategoryID, BillingDescription, BillingAmount, BillingItemQty, BillingItemDate)
+			SELECT Housekeeping.FolioID, 10, CAST(ServiceType.ServiceName AS CHAR(30)), ServiceType.ServiceCost, 1, ISNULL(Housekeeping.TimeCompleted, GETDATE())
+			FROM HousekeepingService
+			INNER JOIN Housekeeping ON (HousekeepingService.HousekeepingID = Housekeeping.HousekeepingID)
+			INNER JOIN ServiceType ON (HousekeepingService.ServiceTypeID = ServiceType.ServiceTypeID)
+			WHERE Housekeeping.FolioID = @FolioID
+			AND ServiceType.ServiceCost > 0 --only charge for services that cost extra
+		END
+
+	-- Repairs have been completed
+	ELSE IF (@BillingType = 2)
+		BEGIN
+			-- Insert extra repairs charges
+			INSERT INTO [FARMS].[dbo].[Billing] (FolioID, BillingCategoryID, BillingDescription, BillingAmount, BillingItemQty, BillingItemDate)
+			SELECT Repair.FolioID, 11, CAST(RepairType.RepairName AS CHAR(30)), RepairType.RepairCost, 1, ISNULL(Repair.TimeCompleted, GETDATE())
+			FROM Repair
+			INNER JOIN RepairType ON (Repair.RepairTypeID = RepairType.RepairTypeID)
+			WHERE Repair.FolioID = @FolioID
+			AND RepairType.RepairCost > 0 --only charge for repairs that cost extra
+		END
+GO
+
+-- TEST
 
 
 -----------------------
@@ -1245,38 +1289,38 @@ AS
 GO
 
 -- TEST
-PRINT '';
-PRINT 'Testing 2100, 2022/11/12';
-PRINT '';
-EXEC sp_GetWeeklySchedule
-	@HotelID				= 2100, 
-	@Date					= '2022/11/12';
-PRINT '';
+--PRINT '';
+--PRINT 'Testing 2100, 2022/11/12';
+--PRINT '';
+--EXEC sp_GetWeeklySchedule
+--	@HotelID				= 2100, 
+--	@Date					= '2022/11/12';
+--PRINT '';
 
-PRINT '';
-PRINT 'Testing 2100, 2022/11/13';
-PRINT '';
-EXEC sp_GetWeeklySchedule
-	@HotelID				= 2100, 
-	@Date					= '2022/11/13';
-PRINT '';
+--PRINT '';
+--PRINT 'Testing 2100, 2022/11/13';
+--PRINT '';
+--EXEC sp_GetWeeklySchedule
+--	@HotelID				= 2100, 
+--	@Date					= '2022/11/13';
+--PRINT '';
 
-PRINT '';
-PRINT 'Testing 2100, 2022/11/15';
-PRINT '';
-EXEC sp_GetWeeklySchedule
-	@HotelID				= 2100, 
-	@Date					= '2022/11/15';
-PRINT '';
+--PRINT '';
+--PRINT 'Testing 2100, 2022/11/15';
+--PRINT '';
+--EXEC sp_GetWeeklySchedule
+--	@HotelID				= 2100, 
+--	@Date					= '2022/11/15';
+--PRINT '';
 
-PRINT '';
-PRINT 'Testing 2400, 2022/11/13';
-PRINT '';
-EXEC sp_GetWeeklySchedule
-	@HotelID				= 2400, 
-	@Date					= '2022/11/13';
-PRINT '';
-
+--PRINT '';
+--PRINT 'Testing 2400, 2022/11/13';
+--PRINT '';
+--EXEC sp_GetWeeklySchedule
+--	@HotelID				= 2400, 
+--	@Date					= '2022/11/13';
+--PRINT '';
+--GO
 
 
 ---------------------------------------------------------------------------------------------
@@ -1284,10 +1328,81 @@ PRINT '';
 ---------------------------------------------------------------------------------------------
 
 ------------------------
--- tr_InsertHousekeeping - LEAVE FOR LATER DUE TO CROSS DATABASE ACCESSIBILITY
+-- tr_InsertHousekeeping
 ------------------------
 
 --Inserts a row into Housekeeping when a Folio's status changes to 'C'.
+
+--We can't set a trigger on FARMS so instead we'll execute sp_InsertHousekeeping periodically
+--and create Housekeeping records for any checked-out Folios that still need housekeeping.
+
+GO
+CREATE PROCEDURE sp_InsertHousekeeping
+AS
+	DECLARE @FolioID				SMALLINT;
+	DECLARE @RoomID					SMALLINT;
+	DECLARE @HotelID				SMALLINT;
+	DECLARE @EmployeeID				SMALLINT;
+	DECLARE @HousekeepingRoomID		SMALLINT;
+	DECLARE @HousekeepingID			SMALLINT;
+
+	-- Find all of the Folios with Status = 'C'
+	DECLARE cursor_FolioCheckout CURSOR
+	FOR
+		SELECT FolioID, RoomID, HotelID
+		FROM OPENQUERY (LOCALSERVER, 'Select Folio.FolioID, Folio.RoomID, Room.HotelID FROM FARMS.dbo.Folio INNER JOIN FARMS.dbo.Room ON (Folio.RoomID = Room.RoomID) WHERE Status = ''C''');
+
+	OPEN cursor_FolioCheckout;
+	FETCH NEXT FROM cursor_FolioCheckout INTO @FolioID, @RoomID, @HotelID;
+
+	WHILE @@FETCH_STATUS = 0
+		BEGIN
+			-- Find all Folios that have no been scheduled for Housekeeping yet
+			IF NOT EXISTS (SELECT 1 FROM Housekeeping WHERE FolioID = @FolioID)
+				BEGIN
+					SELECT @HousekeepingRoomID = HousekeepingRoomID FROM HousekeepingRoom WHERE RoomID = @RoomID;
+
+					SELECT @EmployeeID = dbo.fn_GetAvailableEmployee(
+						@HotelID, 
+						1, 
+						GETDATE(), 
+						(SELECT EstimatedCleanTime 
+							FROM HousekeepingRoomType 
+							INNER JOIN HousekeepingRoom ON ( HousekeepingRoomType.HousekeepingRoomTypeID = HousekeepingRoom.HousekeepingRoomTypeID)
+							WHERE HousekeepingRoomID = @HousekeepingRoomID)
+					);
+					
+					INSERT INTO Housekeeping (EmployeeID, HousekeepingRoomID, FolioID, HousekeepingStatus)
+					VALUES (@EmployeeID, @HousekeepingRoomID, @FolioID, 'P');
+
+					EXEC sp_InsertHousekeepingServices 
+						@HousekeepingID = @@IDENTITY;
+				END
+			FETCH NEXT FROM cursor_FolioCheckout INTO @FolioID, @RoomID, @HotelID;
+		END
+
+	CLOSE cursor_FolioCheckout;
+	DEALLOCATE cursor_FolioCheckout;
+GO
+
+-- TEST
+--PRINT 'All folios that have Status = ''C'': ';
+--SELECT FolioID, RoomID, HotelID
+--		FROM OPENQUERY (LOCALSERVER, 'Select Folio.FolioID, Folio.RoomID, Room.HotelID FROM FARMS.dbo.Folio INNER JOIN FARMS.dbo.Room ON (Folio.RoomID = Room.RoomID) WHERE Status = ''C''');
+
+--PRINT 'All Folios that have had housekeeping scheduled: ';
+--SELECT * FROM Housekeeping
+--WHERE FolioID IN (SELECT FolioID
+--		FROM OPENQUERY (LOCALSERVER, 'Select FolioID FROM FARMS.dbo.Folio WHERE Status = ''C'''));
+
+--PRINT 'Run the stored procedure to schedule housekeeping: ';
+--EXEC sp_InsertHousekeeping;
+
+--PRINT 'All Folios that have had housekeeping scheduled (should match all folios with Status = ''C''): ';
+--SELECT * FROM Housekeeping
+--WHERE FolioID IN (SELECT FolioID
+--		FROM OPENQUERY (LOCALSERVER, 'Select FolioID FROM FARMS.dbo.Folio WHERE Status = ''C'''));
+--GO
 
 
 -------------------------------
@@ -1300,7 +1415,7 @@ PRINT '';
 GO
 
 CREATE TRIGGER tr_CheckHousekeepingEmployee ON Housekeeping
-INSTEAD OF INSERT
+AFTER INSERT
 AS
 	BEGIN
 		
@@ -1320,13 +1435,13 @@ GO
 
 --Tests
 
-INSERT INTO Housekeeping
-VALUES (3000, 3, 4, 'X', NULL);
+--INSERT INTO Housekeeping
+--VALUES (3000, 3, 4, 'X', NULL);
 
-INSERT INTO Housekeeping
-VALUES (3005, 3, 4, 'X', NULL);
+--INSERT INTO Housekeeping
+--VALUES (3005, 3, 4, 'X', NULL);
 
-GO
+--GO
 
 -------------------------
 -- tr_CheckRepairEmployee
@@ -1338,7 +1453,7 @@ GO
 GO
 
 CREATE TRIGGER tr_CheckRepairEmployee ON Repair
-INSTEAD OF INSERT
+AFTER INSERT
 AS
 	BEGIN
 		DECLARE @EmployeeID smallint
@@ -1356,13 +1471,13 @@ GO
 
 -- Tests
 
-INSERT INTO Repair
-VALUES (3005, 3, 4, 1, 'P', NULL, NULL);
+--INSERT INTO Repair
+--VALUES (3005, 3, 4, 1, 'P', NULL, NULL);
 
-INSERT INTO Repair
-VALUES (3000, 3, 4, 1, 'P', NULL, NULL);
+--INSERT INTO Repair
+--VALUES (3000, 3, 4, 1, 'P', NULL, NULL);
 
-GO
+--GO
 
 ----------------------------
 -- tr_UpdateRoomAvailability
@@ -1398,18 +1513,18 @@ GO
 
 -- Tests
 
-UPDATE Repair
-SET RepairStatus = 'C'
-WHERE RepairID = 6
+--UPDATE Repair
+--SET RepairStatus = 'C'
+--WHERE RepairID = 6
 
-UPDATE Repair
-SET RepairStatus = 'C'
-WHERE RepairID = 18
+--UPDATE Repair
+--SET RepairStatus = 'C'
+--WHERE RepairID = 18
 
-SELECT * FROM HousekeepingRoom
+--SELECT * FROM HousekeepingRoom
 
-SELECT * FROM Repair
-GO
+--SELECT * FROM Repair
+--GO
 
 ------------------------------
 -- tr_CheckHousekeepingCharges
@@ -1418,13 +1533,43 @@ GO
 --When housekeeping is completed, checks to see if any housekeeping services have an extra 
 --charge, and calls sp_InsertBillingCharges if so.
 
+CREATE TRIGGER tr_CheckHousekeepingCharges ON Housekeeping
+AFTER UPDATE
+AS
+	-- Housekeeping was completed
+	IF UPDATE(HousekeepingStatus) AND ((SELECT HousekeepingStatus FROM inserted) = 'C')
+		BEGIN
+			DECLARE @FolioID					SMALLINT;
+			SELECT @FolioID = FolioID FROM inserted;
+
+			EXEC sp_InsertBillingCharges
+				@FolioID = @FolioID,
+				@BillingType = 1;
+		END
+GO
+
 
 ------------------------
--- tr_CheckRepairCharges
+-- tr_CheckRepairCharges //TODO - repairs function a bit differently than housekeeping, so sp_InsertBillingCharges needs to be updated first
 ------------------------
 
 --When repairs are completed, checks to see if they have an extra charge, and calls 
 --sp_InsertBillingCharges if so.
+
+--CREATE TRIGGER tr_CheckRepairCharges ON Repair
+--AFTER UPDATE
+--AS
+--	-- Repair was completed
+--	IF UPDATE(RepairStatus) AND ((SELECT RepairStatus FROM inserted) = 'C')
+--		BEGIN
+--			DECLARE @FolioID					SMALLINT;
+--			SELECT @FolioID = FolioID FROM inserted;
+
+--			EXEC sp_InsertBillingCharges
+--				@FolioID = @FolioID,
+--				@BillingType = 2;
+--		END
+--GO
 
 
 ---------------------------
