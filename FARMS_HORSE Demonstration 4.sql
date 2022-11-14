@@ -2,8 +2,8 @@
 
 -- tr_CheckHousekeepingCharges
 -- sp_InsertHousekeepingBillingCharges
--- tr_CheckRepairCharges				//TODO
--- sp_InsertRepairBillingCharges		//TODO
+-- tr_CheckRepairCharges				
+-- sp_InsertRepairBillingCharges	
 -- tr_UpdateRoomAvailability
 
 USE FARMS_HORSE;
@@ -63,7 +63,69 @@ SELECT * FROM [FARMS].[dbo].[Billing] WHERE FolioID = 4; --HousekeepingID 2
 
 
 -- Show repairs with extra charges
--- TODO: Add repairs and show that the repair cost was inserted back into the folio billing
+
+PRINT '';
+PRINT 'Showing current Repair';
+PRINT '';
+
+SELECT * FROM Repair;
+
+PRINT '';
+PRINT 'Adding 3 new repairs on a single folio';
+PRINT '';
+
+INSERT INTO Repair
+VALUES	(3006, 13, 10, 1, 'P', NULL, NULL);
+
+INSERT INTO Repair
+VALUES	(3006, 13, 10, 2, 'P', NULL, NULL);
+
+INSERT INTO Repair
+VALUES	(3006, 13, 10, 3, 'P', NULL, NULL);
+
+PRINT '';
+PRINT 'Showing current Repair';
+PRINT '';
+
+SELECT * FROM Repair;
+
+PRINT '';
+PRINT 'Showing current billing charges';
+PRINT '';
+SELECT * FROM [FARMS].[dbo].[Billing] WHERE FolioID = 10;
+
+PRINT '';
+PRINT 'Update the RepairStatus and trigger tr_CheckRepairCharges';
+
+UPDATE Repair SET RepairStatus = 'C', TimeCompleted = GETDATE()
+WHERE RepairID = 27
+
+PRINT '';
+PRINT 'Showing Updated Billing Charges';
+PRINT '';
+SELECT * FROM [FARMS].[dbo].[Billing] WHERE FolioID = 10;
+
+PRINT '';
+PRINT 'Update the RepairStatus and trigger tr_CheckRepairCharges';
+
+UPDATE Repair SET RepairStatus = 'C', TimeCompleted = GETDATE()
+WHERE RepairID = 28
+
+PRINT '';
+PRINT 'Showing Updated Billing Charges';
+PRINT '';
+SELECT * FROM [FARMS].[dbo].[Billing] WHERE FolioID = 10;
+
+PRINT '';
+PRINT 'Update the RepairStatus and trigger tr_CheckRepairCharges';
+
+UPDATE Repair SET RepairStatus = 'C', TimeCompleted = GETDATE()
+WHERE RepairID = 29
+
+PRINT '';
+PRINT 'Showing Updated Billing Charges';
+PRINT '';
+SELECT * FROM [FARMS].[dbo].[Billing] WHERE FolioID = 10;
 
 
 -- Show that a room becomes available for checkout after all pending repairs are completed
