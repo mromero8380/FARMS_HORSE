@@ -26,11 +26,10 @@ EXEC sp_GetWeeklySchedule
 PRINT '';
 
 PRINT '';
-PRINT 'Testing 2100, 2022/11/15';
+PRINT 'Testing 2100, today''s date';
 PRINT '';
 EXEC sp_GetWeeklySchedule
-	@HotelID				= 2100, 
-	@Date					= '2022/11/15';
+	@HotelID				= 2100;
 PRINT '';
 
 PRINT '';

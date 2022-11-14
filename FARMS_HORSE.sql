@@ -1140,13 +1140,16 @@ GO
 CREATE PROCEDURE sp_GetWeeklySchedule
 (
 	@HotelID					SMALLINT,
-	@Date						SMALLDATETIME
+	@Date						SMALLDATETIME		= NULL
 )
 AS
 	DECLARE @Sunday					SMALLDATETIME;
 	DECLARE @HotelName				VARCHAR(30);
 	DECLARE @HotelAddress			VARCHAR(256);
 	DECLARE @EmployeeName			VARCHAR(64);
+
+	-- If no date was given, use today's date
+	SET @Date = ISNULL(@Date, GETDATE());
 
 	-- Set the schedule date to Sunday's date in the given week
 	SET @Sunday = DATEADD(DAY, 1 - DATEPART(WEEKDAY, @Date), @Date);
