@@ -1,0 +1,9 @@
+|No Discount (Default)|12/31/2039|Default Discount|0|0
+|Internet User's Discount|12/31/2023|Internet User's Discount - Anyone who books on Internet|5|0
+|AARP Discount|12/31/2023|AARP Discount - Must be over 55|10|0
+|Student Discount|12/31/2023|Student Discount - Only Available at Pioneer Guesthouse - Must Show ID|20|0
+|Military Discount|12/31/2023|USA Military Discount (Active/Retired/Reserved) - Must Show ID|15|0
+|$99 Pre-Fall Special Coupon|9/30/2022|Applies to single rooms only|0|25
+|Coupon $20 off 3 night stay|12/31/2022|Applies to 3 or more nights|0|20
+|Coupon $40 off a Suite|12/31/2022|Applies to Suite or Family rooms only|0|40
+|Coupon $77 off a one week stay|12/31/2022|min 7 nights|0|77

@@ -1,0 +1,35 @@
+|Vacuum Carpets|0.00|Vacuum the carpets|1
+|Change and clean bedding|0.00|Replace with clean bedding and wash used bedding|1
+|Clean bathroom floor|0.00|Clean/disinfect and dry floor|1
+|Clean toilet|0.00|Clean the bowl, top, and around|1
+|Restock toiletries (complementary)|0.00|Soap, shampoo, conditioner, body wash, and lotion|0
+|Restock toiletries|5.00|Soap, shampoo, conditioner, body wash, and lotion|0
+|Clean shower/bath|0.00|Scrub walls and floor|1
+|Clean sink|0.00|Clean in and around sink|1
+|Change shower mat|0.00|Replace with clean mat and wash used mat|1
+|Replace damaged/missing shower mat|15.00|Replace with clean mat if damaged or missing|0
+|Clean mirror|0.00|Wipe and don't leave streaks|1
+|Clean vents|0.00|Wipe and disinfect|1
+|Clean fridge|0.00|Clean inside and outside and throw trash out|0
+|Clean minibar|0.00|Dispose of trash and wipe down|0
+|Reset room temperature|0.00|Temperature room comfortable upon arrival|1
+|Check room HVAC|0.00|All systems are in working comdition|1
+|Room lock functional|0.00|Locks and doesn't stick|1
+|Clean/test telephone|0.00|Disinfect and test calling room service|1
+|Clean/test TV|0.00|Disinfect and test channels/volume/power|0
+|Clean TV remote|0.00|Disinfect and test channels/volume/power, check batteries|0
+|Electrical outlets functional|0.00|Test ALL outlets|1
+|Clean windows|0.00|Clean and don't leave streaks|1
+|Clean outdoor furniture|0.00|Spray and wipe off|0
+|Clean curtains|0.00|Clean stains, replace with clean curtains and wash if needed|0
+|Replace damaged/missing clothes hangers|15.00|Ensure each room has at least 3 hangers|0
+|Replace damaged/missing hair dryer|40.50|Check functionality before replacing|0
+|Replace damaged/missing TV remote|35.00|Check functionality before replacing|0
+|Restock minibar water (complementary)|0.00|Restock 4 water bottles|0
+|Restock minibar water|10.00|Restock 4 water bottles|0
+|Restock minibar wine (complementary)|0.00|Restock 1 wine bottle|0
+|Restock minibar wine|40.00|Restock 1 wine bottle|0
+|Replace damaged/missing bedding|55.00|Clean twice for stains before charging for replacement.|0
+|Replace damaged/missing pillows|20.00|Clean twice for stains before charging for replacement.|0
+|Replace damaged/missing curtains|100.00|Clean twice for stains before charging for replacement.|0
+|Empty trash|0.00|Empty trash cans and remove garbage|1

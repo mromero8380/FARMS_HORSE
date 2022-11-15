@@ -1,0 +1,4 @@
+2100|Sunridge Bed & Breakfast|101 Prospector Avenue|Park City|UT|USA|84060|5|/images/SBB.jpg|2
+2200|Pioneer Guest House|4600 This is the Place Road|Salt Lake City|UT|USA|84123-2156|3|/images/PGH.jpg|1
+2300|Weber Suites Ogden|2401 Harrison Blvd.|Ogden|UT|USA|84408|3||4
+2400|Weber Suites Layton|4610 S. Main|Layton|UT|USA|84040-2156|2||1

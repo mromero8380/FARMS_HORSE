@@ -1,0 +1,9 @@
+|Lodging|0
+|Lodging Tax|0
+|Pay Per View|1
+|Room Service|1
+|Food and Beverage|1
+|Parking|0
+|Spa Services|1
+|Dry Cleaning|1
+|County Sales Tax|0

@@ -1,0 +1,14 @@
+|Repair toilet flush valve|30.00|Fix or replace flush valve|15
+|Replace toilet|150.00|Remove and replace whole toilet assembly|120
+|Replace mirror|60.00|Replace broken mirror|15
+|Repair/replace showerhead|30.00|Replace or repair showerhead|15
+|Repair bathroom floor|50.00|Repair damaged/broken floor tile|120
+|Repair door lock|0.00|Repair broken door lock|30
+|Replace door|80.00|Replace damaged front door|60
+|Repair TV|0.00|Repair TV electrical issue|60
+|Replace TV|200.00|Replace damaged TV|15
+|Replace nightstand|30.00|Damaged nightstand replacement|60
+|Replace double bed|100.00|Double size bed replacement|30
+|Replace queen bed|235.00|Queen size bed replacement|30
+|Replace king bed|375.00|King size bed replacement|30
+|Repair wall damage|40.00|Replace drywall and paint|90
